@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <script>
+        function load(){     
+                  
+            
+            let login = document.URL
+            .slice(document.URL
+                    .indexOf('/profile')+'/profile'.length+1,
+                    document.URL.length) 
+           
+            fetch(`${document.URL}`,{
+                method:'POST', mode:'no-cors'
+            })
+            .then(result=>{                
+                return result.json();
+            })
+            .then((data)=>{
+             
+
+               if(data.User_Type == 1 && data.Login == login){
+                   console.log('Admin')
+               }
+            })
+        }
+    </script>
+    <body onload="load()">
+        <h1>Profile</h1>
+        <div id='result'>
+            
+        </div>
+    </body>
+</html>

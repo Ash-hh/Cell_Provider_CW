@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <script>
+
+        let id = new URL(document.URL).searchParams.get('id');
+
+        console.log(document.URL);
+
+        function load(){   
+            fetch(`http://localhost:5000/api/findbyid/FindTariff/${id}`)
+            .then(result=>{                
+                return result.json();
+            })
+            .then((data)=>{
+                console.log(data);
+                result.innerHTML+=`${data.Description}  ${data.Call_Cost_perm}`;
+            })
+        }
+
+        function numSubmit(){
+            let form = document.numForm;           
+            let number = form.isRand.checked ? 0 : form.number.value;
+
+            console.log(number)
+           
+            fetch(document.URL,{
+                method:"POST", 
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({number:number})
+            }).then(result=>{
+               return result.text();
+            }).then(data=>{
+                alert(data);
+            })
+        }
+    </script>
+    <body onload="load()">
+        
+        <div id='result'>
+            
+        </div>
+        <div>
+            <form name="numForm">
+                
+                <input type="checkbox" name="isRand">
+                <input type="text"name="number">
+                <input type="button" value="submit" onclick="numSubmit()">
+
+            </form>
+        </div>
+    </body>
+</html>
