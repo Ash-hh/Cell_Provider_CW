@@ -40,22 +40,86 @@ begin
 end;
 go
 
-exec FindTariffByNumber 8023
 
+--Solve Problems of NUMBERS table
 
-
-SELECT t.[text], s.last_execution_time
-FROM sys.dm_exec_cached_plans AS p
-INNER JOIN sys.dm_exec_query_stats AS s
-   ON p.plan_handle = s.plan_handle
-CROSS APPLY sys.dm_exec_sql_text(p.plan_handle) AS t 
-ORDER BY s.last_execution_time DESC;
-
-
-use CELL_PROVIDER
-
+go
+alter procedure GetNumber
+as
+declare @freenum int =NULL
+declare @num int
+begin
+	set @num = (select TOP (1)  Number from NUMBERS order by Number desc);
+	set @num = @num+1;
+	set @freenum = (select TOP(1) Number from ##FreeNumbers)
+	print(@freenum)
+	if(@freenum is null)
+		begin
+			print(@num)
+			return @num	
+		end
+	else
+		begin
+			delete from  ##FreeNumbers where Number = @freenum
+			print(@freenum)
+			return @freenum
+		end
+end
 go
 
 
+go 
+alter procedure SetFreeNums
+as
+if not exists (select * from tempdb.dbo.sysobjects 
+	where name='##FreeNumbers' )
+	begin
+		create table ##FreeNumbers(Number int);
+	end
 
+delete from ##FreeNumbers
 
+declare @numa int;
+declare @numb int;
+
+declare @start int;
+declare @end int;
+
+declare cursor_freeNums CURSOR FOR
+select Number from NUMBERS order by Number
+
+open cursor_freeNums
+	FETCH NEXT from cursor_freeNums into @numa	
+	FETCH NEXT from cursor_freeNums into @numb	
+	while @@FETCH_STATUS = 0
+	begin
+
+		if(@numb-@numa != -1)
+		begin
+		set @start = @numa+1;
+		set @end = @numb
+			while @start <@end
+			begin
+				insert into ##FreeNumbers (Number) values (@start);
+				set @start = @start+1
+			end
+		end;
+		set @numa = @numb
+		FETCH NEXT from cursor_freeNums into @numb
+
+	end
+close cursor_freeNums
+deallocate cursor_freeNums
+go
+
+use CELL_PROVIDER
+exec SetFreeNums 
+
+select * from ##FreeNumbers
+
+drop table ##FreeNumbers
+
+use master
+select * from tempdb.dbo.sysobjects 
+	where name='##FreeNumbers' 
+	select Number from NUMBERS order by Number
