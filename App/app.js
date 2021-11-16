@@ -151,38 +151,43 @@ app.route('/subtariff') //TODO: rotate to profile.html
             } else {
                 res.redirect('/login');
             }  
-
-           
         } else {
             res.sendStatus(404);
         }
     })
     .post((req,res)=>{
+
+        let number;
+            
+        DB.GetNumber()
+        .then(result=>{            
+            number = result;
+
+            DB.AddNumber(
+                number,
+                req.cookies.User.User_Id,
+                req.query.id,
+                '2021-01-01',
+                1,
+                0
+            );
         
-        if(Number.isInteger(parseInt(req.body.number))){
-        
-            DB.PrintAll('AllNumbers')
-            .then(records =>{
-                let number = records.pop().Number + 1;
+            res.send(`Your number is ${number}`)
+            res.end();
+        })
                
-                DB.AddNumber(
-                    number,
-                    req.cookies.User.User_Id,
-                    req.query.id,
-                    '2021-01-01',
-                    1,
-                    0
-                );
-    
-                res.send(`Your number is ${number}`)
-                res.end();
-            })    
-        } else {
-            res.sendStatus(400);
-        }
+       
+
+       
+       
     })
 
-app.route('/call') //TODO: end this shit
+app.route('/Admin')
+    .get((req,res)=>{
+        res.sendFile(__dirname+'/resources/adminpage.html')
+    })  
+
+app.route('/call')
     .get((req,res)=>{
         res.sendFile(__dirname+'/resources/call.html')
     })
@@ -208,44 +213,48 @@ app.route('/call') //TODO: end this shit
         } else if (req.body.submit === 'End Call' || req.body.submit==='End Call Emergency'){
 
             let User = req.cookies.User ? req.cookies.User : undefined;
-            
-            
+
+            DB.FindNumberByNumberSynch(req.body.sender,(records)=>{
+                
+                if(!User || User.User_Id != records.User_Id){
+                    DB.FindById('FindUser',records.User_Id) 
+                   .then(records=>{                      
+                       User = records;
+                   })
+                }
+                
+                DB.FindTariffByNum(req.body.sender)                
+                .then(recordss=>{
+                    let bill = recordss.Call_Cost_perm * ((req.body.min*60)+req.body.second);
+                    User.Ballance -= bill;   
+                    console.log(`Cookie: ${req.cookies.User.User_Id}| Current: ${User.User_Id}`)                
+                    DB.UpdateUser(User.User_Id,{Ballance:User.Ballance})
+
+                    if(req.cookies.User.User_Id == User.User_Id){
+                        res.cookie('User',User);
+                    }
+                    
+                    res.end(`call cost: ${bill} account ballance: ${User.Ballance}`)
+                })
+
+            })
 
             DB.FindById('FindCall',req.body.callId)
             .then(records=>{
-
-                if(!User){
-                    DB.FindById('FindUser',records.User_Sender_Id)
-                    .then(result =>{
-                        User = result;
-                    })
-                }
-
                 DB.UpdateCall(
                     req.body.callId,
                     records.User_Sender_Id,
                     records.User_Receiver_Id,
                     (req.body.min*60)+req.body.second
                 )
+            });
 
-                DB.FindTariffByNum(req.body.sender)
-                .then(recordss=>{
-
-                    let bill = recordss.Call_Cost_perm * ((req.body.min*60)+req.body.second);
-                    User.Ballance -= bill;                    
-                    DB.UpdateUser(User.User_Id,{Ballance:User.Ballance})
-
-                    res.end(`call cost: ${bill} account ballance: ${User.Ballance}`)
-                })
-            });  
-
-             
-            
         }
         
     })
 
 app.listen(5000);
 
+DB.SetFreeNumbers();
 
     

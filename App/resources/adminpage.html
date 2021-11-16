@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <script>
+            function send(Button_Value){
+
+                let arr; 
+
+                fetch(`http://localhost:5000/api/all/${Button_Value}`)
+                .then(result=>{
+                    return result.json()
+                }).then(data=>{
+                    arr = data;
+                    console.log(arr);
+                    
+                })
+            }
+        </script>
+
+        <div>
+            <input type='button' name="AllUsers" value="AllUsers" onclick="send(this.name)">
+            <input type='button' name="AllTariffs" value="AllTariffs" onclick="send(this.name)">
+            <input type='button' name="AllNumbers" value="AllNumbers" onclick="send(this.name)">
+            <input type='button' name="AllCalls" value="AllCalls" onclick="send(this.name)">
+        </div>
+        <hr>
+        <div id='resultDiv'>
+
+        </div>
+    </body>
+
+</html>
