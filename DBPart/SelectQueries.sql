@@ -1,5 +1,5 @@
 use CELL_PROVIDER
-
+----------------------------
 go
 create procedure FindUserByLogin
 	@login nvarchar(50)
@@ -7,9 +7,8 @@ as
 begin
 	select * from USERS where Login = @login;
 end;
+----------------------------
 
-go
-use CELL_PROVIDER
 go
 create procedure FindNumberByNum
 	@number int,
@@ -20,8 +19,6 @@ begin
 end;
 go
 
-select * from NUMBERS;
-
 go
 create procedure FindNumberByUserId
 	@Id int
@@ -29,7 +26,6 @@ as
 begin
 	select * from NUMBERS where User_Id = @Id
 end;
-
 
 go
 create procedure FindTariffByNumber 
@@ -41,8 +37,8 @@ end;
 go
 
 
---Solve Problems of NUMBERS table
 
+--Solve Problems of NUMBERS table
 go
 alter procedure GetNumber
 as
@@ -66,7 +62,6 @@ begin
 		end
 end
 go
-
 
 go 
 alter procedure SetFreeNums
@@ -112,14 +107,3 @@ close cursor_freeNums
 deallocate cursor_freeNums
 go
 
-use CELL_PROVIDER
-exec SetFreeNums 
-
-select * from ##FreeNumbers
-
-drop table ##FreeNumbers
-
-use master
-select * from tempdb.dbo.sysobjects 
-	where name='##FreeNumbers' 
-	select Number from NUMBERS order by Number

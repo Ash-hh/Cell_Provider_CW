@@ -18,15 +18,9 @@
         }
 
         function numSubmit(){
-            let form = document.numForm;           
-            let number = form.isRand.checked ? 0 : form.number.value;
-
-            console.log(number)
            
-            fetch(document.URL,{
-                method:"POST", 
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({number:number})
+            fetch(`/subtariff?id=${id}`,{
+                method:"POST",
             }).then(result=>{
                return result.text();
             }).then(data=>{
@@ -41,11 +35,7 @@
         </div>
         <div>
             <form name="numForm">
-                
-                <input type="checkbox" name="isRand">
-                <input type="text"name="number">
                 <input type="button" value="submit" onclick="numSubmit()">
-
             </form>
         </div>
     </body>

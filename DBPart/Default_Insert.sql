@@ -16,6 +16,12 @@ values
 (8022,1,1,'2000-02-02',1,100),
 (8023,2,1,'2000-02-02',1,100);
 
+insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open,IsActive,Ballance)
+values 
+(8024,2,2,'2000-01-01',1,100)
+
+delete from NUMBERS where Number = 8024
+
 select * from NUMBERS
 select * from CALLS
 
