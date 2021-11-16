@@ -101,11 +101,25 @@ class DB{
             }
 
             return result.execute('FindNumberByNum')
-            .then(result=>{
-                return result.recordset;
+            .then(result=>{                
+                return result.recordset.length > 1 ?result.recordset:result.recordset.pop() ;
             })
         })
     }
+
+    FindNumberByNumberSynch(number,callback){
+        sql.connect(config).then(pool=>{
+            let result = pool.request()
+            .input('number',sql.Int,number);
+
+            result.execute('FindNumberByNum')
+            .then(result=>{                
+                callback(result.recordset.length > 1 ?result.recordset:result.recordset.pop());
+            })
+        })
+    }
+
+
 
     FindTariffByNum(number){
         
@@ -137,7 +151,7 @@ class DB{
 
             let result = pool.request().input('Id',sql.Int,id)
             if (UserObject.hasOwnProperty('User_Name')){
-                console.log('what?')
+               
                 result.input('Username',sql.NVarChar,UserObject.User_Name);
             } 
             if (UserObject.hasOwnProperty('User_Surname')) result.input('Surname',sql.NVarChar,UserObject.User_Surname);
@@ -154,6 +168,21 @@ class DB{
         })
     }
 
+    UpdateNumber(id,NumberObject){
+        return sql.connect(config).then(pool=>{
+            let result = pool.request().input('Id',sql.Int,id)
+        
+            if (NumberObject.hasOwnProperty('Number')) result.input('Number',sql.Int,NumberObject.Number);
+            if (NumberObject.hasOwnProperty('User_Id')) result.input('UserId',sql.Int,NumberObject.User_Id);
+            if (NumberObject.hasOwnProperty('Tariff_Id')) result.input('TariffId',sql.Int,NumberObject.Tariff_Id);
+            if (NumberObject.hasOwnProperty('Date_Open')) result.input('DateOpen',sql.Date,NumberObject.Date_Open);
+            if (NumberObject.hasOwnProperty('IsActive')) result.input('Active',sql.Bit,NumberObject.IsActive);
+            if (NumberObject.hasOwnProperty('Ballance')) result.input('Ballance',sql.Int,NumberObject.Ballance);
+
+            return result.execute('NumberUpdate'); 
+        })
+    } 
+
     PrintAll(exec){
         return sql.connect(config).then(pool=>{
             return pool.request()
@@ -161,6 +190,23 @@ class DB{
             .then(result=>{
                 return result.recordset;
             })            
+        })
+    }
+
+    GetNumber(){
+        return sql.connect(config).then(pool=>{
+            return pool.request()
+            .execute("GetNumber")
+            .then(result=>{
+                return result.returnValue;
+            })
+        })
+    }
+
+    SetFreeNumbers(){
+        sql.connect(config).then(pool=>{
+            pool.request()
+            .execute("SetFreeNums")
         })
     }
 

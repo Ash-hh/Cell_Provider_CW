@@ -140,10 +140,10 @@ end;
 --------------------------------
 --NUMBERS
 --------------------------------
-
+use CELL_PROVIDER
 --NumberAdd
 go 
-create procedure NumberAdd
+alter procedure NumberAdd
 	@Number int,
 	@UserId int,
 	@TariffId int,
@@ -152,30 +152,30 @@ create procedure NumberAdd
 	@Ballance money
 as
 begin
-	insert into NUMBERS(Number,User_Id,Tarrif_Id,Date_Open,IsActive,Ballance)
+	insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open,IsActive,Ballance)
 	values
 	(@Number,@UserId,@TariffId,@DateOpen,@Active,@Ballance);
 end;
 
 --NumberUpdate
 go
-create procedure NumberUpdate
+alter procedure NumberUpdate
 	@Id int,
-	@Number int,
-	@UserId int,
-	@TariffId int,
-	@DateOpen date,
-	@Active bit,
-	@Ballance money
+	@Number int = NULL,
+	@UserId int = NULL,
+	@TariffId int = NULL,
+	@DateOpen date = NULL,
+	@Active bit = NULL,
+	@Ballance money = NULL
 as
 begin
 	update NUMBERS
-		SET Number = @Number,
-			User_Id=@UserId,
-			Tarrif_Id=@TariffId,
-			Date_Open=@DateOpen,
-			IsActive=@Active,
-			Ballance = @Ballance
+		SET Number = IsNull(@Number,Number),
+			User_Id=IsNull(@UserId,User_Id),
+			Tariff_Id=IsNull(@TariffId,Tariff_Id),
+			Date_Open=IsNull(@DateOpen,Date_Open),
+			IsActive=IsNull(@Active,IsActive),
+			Ballance = IsNull(@Ballance,Ballance)
 		where Number_Id = @Id
 end;
 go

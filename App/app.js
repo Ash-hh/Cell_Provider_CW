@@ -44,9 +44,11 @@ app.route('/login')
             .then(records=>{
                 if(records){                    
                     if(records.Password === req.body.password){
-                        delete records.User_Type;//
-                        delete records.Date_Birth;//
-                        delete records.Password;//
+                        if(records.User_Type != 1){ 
+                            delete records.User_Type;
+                        }  
+                        delete records.Date_Birth;      
+                        delete records.Password;       
                         res.cookie('User',records);
                         console.log('ok');
                         res.redirect('/');                       
@@ -182,9 +184,31 @@ app.route('/subtariff') //TODO: rotate to profile.html
        
     })
 
+app.post('/api/admin/:exec/:id',(req,res)=>{ //TODO: current task
+
+    console.log(req.params.exec,req.params.id)
+    console.log(req.body);
+    
+    DB[req.params.exec](req.params.id,req.body)
+   
+
+})
+
+
+
 app.route('/Admin')
     .get((req,res)=>{
-        res.sendFile(__dirname+'/resources/adminpage.html')
+        if(req.cookies.User){           
+            if(req.cookies.User.User_Type == 1){
+                res.sendFile(__dirname+'/resources/adminpage.html')
+            } else {
+                res.redirect('/')  
+            }
+           
+        } else {
+            res.redirect('/login')
+        }
+        
     })  
 
 app.route('/call')
