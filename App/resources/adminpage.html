@@ -1,9 +1,31 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <style>
+       
 
+
+       #popup{
+            width:100%;
+            min-height:100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow:hidden;
+            position:fixed;
+            top:0px;
+            
+        }
+        #popup #popup_content{
+            margin:40px auto 0px auto;
+            width:420px;
+            height: 90px;
+            padding:10px;
+            background-color: #c5c5c5;
+            border-radius:5px;
+            box-shadow: 0px 0px 10px #000;
+        }       
+        </style>
     </head>
-    <body>
+    <body onload="PopUpHide()">
         <script>
                 
             let arr=[];     
@@ -27,15 +49,27 @@
                 })
             }
 
-            function ControllerFunc(id,name,value){
+            function ControllerFunc(id,name,value,Tariff=undefined){
 
+                console.log(Tariff)
+                
                 value = JSON.parse(value)
                 let searchelem = arr.find(user => user[name] == id);
+                
+                let elemId =  arr.indexOf(searchelem); //TODO:refactor
 
-                console.log(searchelem);
-                searchelem[value.property] = !searchelem[value.property]
-                console.log(searchelem);
+                searchelem = Tariff ? Tariff : searchelem;
 
+                if(!Tariff){
+                    if(value.property === 'User_Type'){
+                        searchelem[value.property] = searchelem[value.property] == 1 ? 2 : 1;
+                    } else{
+                        searchelem[value.property] = !searchelem[value.property]
+                    }
+                }   
+
+                arr[elemId] = searchelem; 
+                
                 //TODO: add ALERT for delete functions || Delete
                 
                 fetch(`http://localhost:5000/api/admin/${value.exec}/${id}`,{
@@ -44,14 +78,34 @@
                     body:JSON.stringify(searchelem)
                 })
                 .then(result=>{
-                    return result.text();
+                    if(result.ok)
+                        return result.text();
                 }).then(data=>{
-                    console.log(data);
+                    console.log(value.exec)
+                    if(value.exec.indexOf('Tariff')!=-1) {TariffInterface(arr)}                    
+                    if(value.exec.indexOf('Number')!=-1) {NumberInterface(arr)}
+                    if(value.exec.indexOf('User')!=-1) {UserInterface(arr)}
+                    if(value.exec.indexOf('Call')!=-1) {CallInterface(arr)}
+
                 })
 
 
             }
 
+            function TariffEdit(id){
+                let form = document.forms.TariffForm;
+
+                let Tariff = {
+                    Tariff_Id :id,
+                    Description : form.Description.value,
+                    Call_Cost_perm : form.Call_Cost.value
+                }
+                ControllerFunc(id,"Tariff_Id",'{"exec":"UpdateTariff"}',Tariff)
+
+
+                PopUpHide();
+            }
+            
             function UsersInterface(usersArr){
 
                 let UserTable = document.createElement("table")
@@ -120,9 +174,18 @@
                         row.insertCell().append(element.Call_Cost_perm)
                         
                         let tariffController = row.insertCell().innerHTML = ` 
-                        <input type='button' id="${element.Tariff_Id}" name="TariffDelete" value="Delete" onclick="ControllerFunc(this.id, this.name, this.value)">
+                        <button 
+                            id="${element.Tariff_Id}" 
+                            name="TariffDelete" 
+                            value="Delete" 
+                            onclick="ControllerFunc(this.id, this.name, this.value)">
+                        Delete </button>    
 
-                        <input type='button' id="${element.Tariff_Id}" name="TariffUpdate" value="Edit" onclick="ControllerFunc(this.id,this.name, this.value)">`;
+                        <button 
+                            id="${element.Tariff_Id}" 
+                            name="Tariff_Id" 
+                            onclick="PopUpShow(this.id,this.name)">
+                        Edit </button>    `;
                 });
 
                 resultDiv.innerHTML='';
@@ -172,7 +235,6 @@
                 resultDiv.append(NumberTable);
             }
 
-
             function CallInterface(callArr){
 
                 let CallTable = document.createElement("table")
@@ -197,8 +259,37 @@
                 resultDiv.append(CallTable);
             }
 
+            function PopUpHide(){
+                popup.style.visibility = "hidden";               
+            }
+
+            function PopUpShow(id,name){
+
+                let searchelem = arr.find(user => user[name] == id);
+
+                popup_content.innerHTML = `
+                
+                <form name="TariffForm">
+                    <label name="id" id="${id}">Edit Tariff Id: ${id}</label>
+                    <br>
+                    <input type="text" name="Description" value="${searchelem.Description}">
+                    <br>
+                    <input type="text" name ="Call_Cost" value="${searchelem.Call_Cost_perm}">
+                    <br>
+                    <input type="button" value="Edit" onclick="TariffEdit(${id})">
+                </form>`
+                
+                popup.style.visibility = "visible" 
+            }
+
         </script>
 
+
+        <div id="popup">
+            <div id="popup_content">
+               
+            </div>
+        </div>
         <div>
             <input type='button' name="AllUsers" value="AllUsers" onclick="send(this.name)">
             <input type='button' name="AllTariffs" value="AllTariffs" onclick="send(this.name)">

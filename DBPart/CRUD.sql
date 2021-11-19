@@ -98,15 +98,15 @@ end;
 
 --Update Tariff
 go
-create procedure TariffUpdate
+alter procedure TariffUpdate
 	@Id int,
-	@Description text,
-	@CallCostPerMin money
+	@Description text = NULL,
+	@CallCostPerMin money = NULL
 as
 begin
 	update TARIFFS
-	set Description = @Description, 
-	Call_Cost_perm = @CallCostPerMin
+	set Description = IsNull(@Description,Description), 
+	Call_Cost_perm = IsNull(@CallCostPerMin,Call_Cost_perm)
 	where Tariff_Id = @Id;
 end;
 

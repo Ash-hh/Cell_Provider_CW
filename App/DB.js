@@ -183,6 +183,17 @@ class DB{
         })
     } 
 
+    UpdateTariff(id,TariffObject){
+        return sql.connect(config).then(pool=>{
+            let result = pool.request().input('Id',sql.Int,id)
+        
+            if (TariffObject.hasOwnProperty('Description')) result.input('Description',sql.Text,TariffObject.Description);
+            if (TariffObject.hasOwnProperty('Call_Cost_perm')) result.input('CallCostPerMin',sql.Money,TariffObject.Call_Cost_perm);
+            
+            return result.execute('TariffUpdate'); 
+        });
+    }
+
     PrintAll(exec){
         return sql.connect(config).then(pool=>{
             return pool.request()
