@@ -189,11 +189,14 @@ app.post('/api/admin/:exec/:id',(req,res)=>{ //TODO: current task
     console.log(req.params.exec,req.params.id)
     console.log(req.body);
     
-    
-    DB[req.params.exec](req.params.id,req.body)
-   
-   
-   
+    if(req.params.exec != 'AddTariff'){
+        DB[req.params.exec](req.params.id,req.body)
+    } else {
+        console.log('body')
+        console.log(req.body)
+        DB[req.params.exec](req.body)
+    }
+
     res.end();
 
 })

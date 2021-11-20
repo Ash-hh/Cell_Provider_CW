@@ -89,12 +89,12 @@ end;
 go
 
 
-create procedure TariffAdd
-	@Description text,
+alter procedure TariffAdd
+	@Description ntext,
 	@CallCostPerMin money
 as
 begin
-	insert into TARIFFS(Description,Tariff_Id)
+	insert into TARIFFS(Description,Call_Cost_perm)
 	values(@Description, @CallCostPerMin);
 end;
 

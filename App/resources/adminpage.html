@@ -57,10 +57,8 @@
                 
                 let elemId =  arr.indexOf(searchelem); //TODO:refactor
 
-               
-
                 if(value.exec.indexOf('Delete')==-1){
-                    if(!Tariff){
+                    if(!Tariff && value.exec=='UpdateTariff'){
                         if(value.property === 'User_Type'){
                             searchelem[value.property] = searchelem[value.property] == 1 ? 2 : 1;
                         } else{
@@ -79,11 +77,6 @@
                         return 0;
                     }
                 }
-               
-                
-               
-                
-                //TODO: add ALERT for delete functions || Delete
                 
                 fetch(`http://localhost:5000/api/admin/${value.exec}/${id}`,{
                     method:'POST',
@@ -94,29 +87,18 @@
                     if(result.ok)
                         return result.text();
                 }).then(data=>{
-                    console.log(value.exec)
-                    if(value.exec.indexOf('Tariff')!=-1) {TariffInterface(arr)}                    
+                    if(value.exec.indexOf('Tariff')!=-1 && value.exec == 'AddTariff') 
+                    {   
+                        send('AllTariffs')
+                    } else {    
+                        TariffInterface(arr)
+                    }                
                     if(value.exec.indexOf('Number')!=-1) {NumberInterface(arr)}
                     if(value.exec.indexOf('User')!=-1) {UserInterface(arr)}
                     if(value.exec.indexOf('Call')!=-1) {CallInterface(arr)}
 
                 })
 
-
-            }
-
-            function TariffEdit(id){
-                let form = document.forms.TariffForm;
-
-                let Tariff = {
-                    Tariff_Id :id,
-                    Description : form.Description.value,
-                    Call_Cost_perm : form.Call_Cost.value
-                }
-                ControllerFunc(id,"Tariff_Id",'{"exec":"UpdateTariff"}',Tariff)
-
-
-                PopUpHide();
             }
             
             function UsersInterface(usersArr){
@@ -197,7 +179,7 @@
                         <button 
                             id="${element.Tariff_Id}" 
                             name="Tariff_Id" 
-                            onclick="PopUpShow(this.id,this.name)">
+                            onclick="PopUpShow('Edit',this.id,this.name)">
                         Edit </button>    `;
                 });
 
@@ -281,23 +263,66 @@
                 popup.style.visibility = "hidden";               
             }
 
-            function PopUpShow(id,name){
+            function PopUpShow(mode,id,name){
 
                 let searchelem = arr.find(user => user[name] == id);
 
-                popup_content.innerHTML = `
+                if(mode === 'Edit'){
+
+                    popup_content.innerHTML = `
                 
-                <form name="TariffForm">
-                    <label name="id" id="${id}">Edit Tariff Id: ${id}</label>
-                    <br>
-                    <input type="text" name="Description" value="${searchelem.Description}">
-                    <br>
-                    <input type="text" name ="Call_Cost" value="${searchelem.Call_Cost_perm}">
-                    <br>
-                    <input type="button" value="Edit" onclick="TariffEdit(${id})">
-                </form>`
-                
+                    <form name="TariffForm">
+                        <label name="id" id="${id}">Edit Tariff Id: ${id}</label>
+                        <br>
+                        <input type="text" name="Description" value="${searchelem.Description}">
+                        <br>
+                        <input type="text" name ="Call_Cost" value="${searchelem.Call_Cost_perm}">
+                        <br>
+                        <input type="button" value="Edit" onclick="TariffEdit(${id})">
+                    </form>`
+
+                } else if (mode === 'Delete'){
+                    
+                    popup_content.innerHTML =`
+                    
+                    <form name="TariffFormAdd">
+                        <label> Description </label>
+                        <input type="text" name="Description">
+                        <br>
+                        <label> Call Cost </label>
+                        <input type="text" name ="Call_Cost" >
+                        <br>
+                        <input type="button" value="Add" onclick="AddTariff()">
+                    </form>`
+                }
+
                 popup.style.visibility = "visible" 
+            }
+
+            function TariffEdit(id){
+                let form = document.forms.TariffForm;
+
+                let Tariff = {
+                    Tariff_Id :id,
+                    Description : form.Description.value,
+                    Call_Cost_perm : form.Call_Cost.value
+                }
+                ControllerFunc(id,"Tariff_Id",'{"exec":"UpdateTariff"}',Tariff)
+
+                PopUpHide();
+            }
+            
+            function AddTariff(){
+                let form = document.forms.TariffFormAdd;
+
+                let Tariff = {
+                    Description : form.Description.value,
+                    Call_Cost_perm : form.Call_Cost.value
+                }
+               
+                ControllerFunc(undefined,"Tariff_Id",'{"exec":"AddTariff"}',Tariff) //TODO: refactor
+                PopUpHide();
+                
             }
 
         </script>
@@ -313,6 +338,7 @@
             <input type='button' name="AllTariffs" value="AllTariffs" onclick="send(this.name)">
             <input type='button' name="AllNumbers" value="AllNumbers" onclick="send(this.name)">
             <input type='button' name="AllCalls" value="AllCalls" onclick="send(this.name)">
+            <input type='button' name="AddTariff"value="AddTariff" onclick="PopUpShow('Delete')">
         </div>
         <hr>
         <div id='resultDiv'>

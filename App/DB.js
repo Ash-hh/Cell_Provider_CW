@@ -66,6 +66,18 @@ class DB{
         })
     }
 
+    AddTariff(Tariff){
+        console.log(Tariff)
+        sql.connect(config).then(pool=>{
+            pool.request()
+            .input('Description',sql.NText,Tariff.Description)
+            .input('CallCostPerMin',sql.Money,Tariff.Call_Cost_perm)
+            .execute('TariffAdd')
+        }).catch(err=>{
+            console.log(err);
+        })
+    }
+
     FindById(exec,id){
         return sql.connect(config).then(pool=>{
             return pool.request()
