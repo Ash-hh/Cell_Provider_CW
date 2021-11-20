@@ -50,25 +50,38 @@
             }
 
             function ControllerFunc(id,name,value,Tariff=undefined){
-
-                console.log(Tariff)
                 
                 value = JSON.parse(value)
+
                 let searchelem = arr.find(user => user[name] == id);
                 
                 let elemId =  arr.indexOf(searchelem); //TODO:refactor
 
-                searchelem = Tariff ? Tariff : searchelem;
+               
 
-                if(!Tariff){
-                    if(value.property === 'User_Type'){
-                        searchelem[value.property] = searchelem[value.property] == 1 ? 2 : 1;
-                    } else{
-                        searchelem[value.property] = !searchelem[value.property]
+                if(value.exec.indexOf('Delete')==-1){
+                    if(!Tariff){
+                        if(value.property === 'User_Type'){
+                            searchelem[value.property] = searchelem[value.property] == 1 ? 2 : 1;
+                        } else{
+                            searchelem[value.property] = !searchelem[value.property]
+                        }
+                    } else {
+                        searchelem = Tariff ? Tariff : searchelem;
+                        arr[elemId] = searchelem; 
+                    }   
+                } else {
+                    if(confirm('U cant rollbcak Delete')){
+                        arr.splice(elemId,1);
+                                              
+                    } else {
+                       
+                        return 0;
                     }
-                }   
-
-                arr[elemId] = searchelem; 
+                }
+               
+                
+               
                 
                 //TODO: add ALERT for delete functions || Delete
                 
@@ -150,7 +163,7 @@
                         <button 
                             id="${element.User_Id}" 
                             name="DeleteUser" 
-                            value='{"exec":"UserUpdate"}' 
+                            value='{"exec":"DeleteUser"}' 
                             onclick="ControllerFunc(this.id,this.name, this.value)">
                         Delete User </button>`;
                 });
@@ -177,7 +190,7 @@
                         <button 
                             id="${element.Tariff_Id}" 
                             name="TariffDelete" 
-                            value="Delete" 
+                            value='{"exec":"DeleteTariff"}' 
                             onclick="ControllerFunc(this.id, this.name, this.value)">
                         Delete </button>    
 
@@ -226,7 +239,7 @@
                         <button 
                             id="${element.Number_Id}" 
                             name="Number_Id" 
-                            value='{"exec":"UpdateNumber","property":"IsActive"}' 
+                            value='{"exec":"DeleteNumber"}' 
                             onclick="ControllerFunc(this.id,this.name, this.value)">
                         Delete </button>`
                 });
@@ -252,7 +265,12 @@
                         row.insertCell().append(element.User_Receiver_Id)
                         
                         let callController = row.insertCell().innerHTML = ` 
-                        <input type='button' id="${element.Call_Id}" name="CallDelete" value="Delete" onclick="ControllerFunc(this.id, this.name, this.value)">`
+                        <button 
+                            id="${element.Call_Id}" 
+                            name="Call_Id" 
+                            value='{"exec":"DeleteCall"}' 
+                            onclick="ControllerFunc(this.id, this.name, this.value)">
+                        Delete </button>`
                 });
 
                 resultDiv.innerHTML='';

@@ -189,7 +189,10 @@ app.post('/api/admin/:exec/:id',(req,res)=>{ //TODO: current task
     console.log(req.params.exec,req.params.id)
     console.log(req.body);
     
+    
     DB[req.params.exec](req.params.id,req.body)
+   
+   
    
     res.end();
 

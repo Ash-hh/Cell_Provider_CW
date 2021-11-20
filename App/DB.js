@@ -194,6 +194,37 @@ class DB{
         });
     }
 
+
+    DeleteUser(id){
+        sql.connect(config).then(pool=>{
+            pool.request().input('Id',sql.Int,id).execute('UserDelete')
+        });
+    }
+
+    DeleteNumber(id){
+        sql.connect(config).then(pool=>{
+            pool.request().input('Id',sql.Int,id).execute('NumberDelete')
+        });
+    }
+
+    DeleteTariff(id){
+        sql.connect(config).then(pool=>{
+            pool.request().input('Id',sql.Int,id).execute('TariffDelete')
+        });
+    }
+
+    DeleteCall(id){
+        sql.connect(config).then(pool=>{
+            pool.request().input('Id',sql.Int,id).execute('CallDelete')
+        });
+    }
+
+    DeleteFromTable(id,exec){
+        sql.connect(config).then(pool=>{
+            pool.request().input('Id',sql.Int,id).execute(exec)
+        });
+    }
+
     PrintAll(exec){
         return sql.connect(config).then(pool=>{
             return pool.request()

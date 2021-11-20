@@ -87,6 +87,8 @@ end;
 
 --Insert Into TARIFFS
 go
+
+
 create procedure TariffAdd
 	@Description text,
 	@CallCostPerMin money
@@ -112,11 +114,11 @@ end;
 
 --Delete Tariff
 go
-create procedure TariffDelete 
+alter procedure TariffDelete 
 	@Id int
 as
 begin
-	delete NUMBERS where Tarrif_Id = @Id;
+	delete NUMBERS where Tariff_Id = @Id;
 	delete from TARIFFS where Tariff_Id = @Id;
 end;
 
@@ -143,6 +145,8 @@ end;
 use CELL_PROVIDER
 --NumberAdd
 go 
+
+
 alter procedure NumberAdd
 	@Number int,
 	@UserId int,
@@ -273,7 +277,7 @@ end;
 
 
 
-
+go
 use CELL_PROVIDER;
 drop procedure AllTariffs;
 drop procedure AllUsers;
