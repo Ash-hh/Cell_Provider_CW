@@ -145,7 +145,7 @@ app.route('/profile/:login')
         
     })
 
-app.route('/subtariff') //TODO: rotate to profile.html
+app.route('/subtariff') //TODO: rotate to profile.html 
     .get((req,res)=>{
         if(req.query.id){   
             if(req.cookies.User){
@@ -184,10 +184,7 @@ app.route('/subtariff') //TODO: rotate to profile.html
        
     })
 
-app.post('/api/admin/:exec/:id',(req,res)=>{ //TODO: current task
-
-    console.log(req.params.exec,req.params.id)
-    console.log(req.body);
+app.post('/api/admin/:exec/:id',(req,res)=>{
     
     if(req.params.exec != 'AddTariff'){
         DB[req.params.exec](req.params.id,req.body)

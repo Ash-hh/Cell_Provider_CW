@@ -50,15 +50,20 @@
             }
 
             function ControllerFunc(id,name,value,Tariff=undefined){
-                
-                value = JSON.parse(value)
 
+               
+
+                value = JSON.parse(value)
+                console.log(id,name,Tariff)
+                console.log(value)
+                
                 let searchelem = arr.find(user => user[name] == id);
                 
                 let elemId =  arr.indexOf(searchelem); //TODO:refactor
 
                 if(value.exec.indexOf('Delete')==-1){
-                    if(!Tariff && value.exec=='UpdateTariff'){
+                    if(!Tariff && value.exec.indexOf('Update')!=-1){
+                        console.log('FFFFF')
                         if(value.property === 'User_Type'){
                             searchelem[value.property] = searchelem[value.property] == 1 ? 2 : 1;
                         } else{
@@ -77,6 +82,8 @@
                         return 0;
                     }
                 }
+
+             
                 
                 fetch(`http://localhost:5000/api/admin/${value.exec}/${id}`,{
                     method:'POST',
@@ -94,7 +101,7 @@
                         TariffInterface(arr)
                     }                
                     if(value.exec.indexOf('Number')!=-1) {NumberInterface(arr)}
-                    if(value.exec.indexOf('User')!=-1) {UserInterface(arr)}
+                    if(value.exec.indexOf('User')!=-1) {UsersInterface(arr)}
                     if(value.exec.indexOf('Call')!=-1) {CallInterface(arr)}
 
                 })
