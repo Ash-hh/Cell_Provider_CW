@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <script>
+
+        let interval;
+        let id;
+        function load(){  
+            let id;
+           interval = setInterval(()=>{
+            fetch(`http://localhost:5000/api/admin/GetLastExecs/${id}`)
+                .then(result=>{
+                    if(result.ok)
+                        return result.json();
+                }).then(data=>{
+                    console.log(data);
+                    let Table =  document.createElement("table")
+                    let tableHeader =   Table.insertRow();
+
+                    tableHeader.insertCell().innerHTML = 'Procedure Name'
+                    tableHeader.insertCell().innerHTML = 'Last Execution'
+
+                    data.forEach(element => {
+                        let row = Table.insertRow()
+                        row.insertCell().append(element.name)
+                        row.insertCell().append(element.last_execution_time)
+                    });
+                    LastExecs.innerHTML='';
+                    LastExecs.append(Table);
+                })
+           },5000)
+        }
+
+        function ExecutionsCount(){
+
+            console.log('fff')
+
+            fetch(`http://localhost:5000/api/admin/GetExecsCount/${id}`)
+                .then(result=>{
+                    if(result.ok)
+                        return result.json();
+                }).then(data=>{
+                    console.log(data);
+                    let Table =  document.createElement("table")
+                    let tableHeader =   Table.insertRow();
+
+                    tableHeader.insertCell().innerHTML = 'Procedure Name'
+                    tableHeader.insertCell().innerHTML = 'Execs Count'
+
+                    data.forEach(element => {
+                        let row = Table.insertRow()
+                        row.insertCell().append(element.name)
+                        row.insertCell().append(element.total_execution_count)
+                    });
+                    ExecsCount.innerHTML='';
+                    ExecsCount.append(Table);
+                })
+        }
+
+        function end(){
+            clearInterval(interval);
+        }
+    </script>
+    <style>
+       .container {
+            height: 100%;
+            position: fixed;
+        }
+
+        #LastExecs { 
+            float: left;
+            border: 1px solid #C1C1C1;
+            overflow: auto;
+            height: 99%;
+
+        }
+
+        #ExecsCount {
+            
+            float: left;
+            border: 1px solid #C1C1C1;
+            overflow: auto;
+            height: 99%;
+        }
+    </style>
+    <body onload="load()">
+        <input type="button" onclick="ExecutionsCount()" value="ExecutionsCount">
+        <input type="button" onclick="end()" value="end()">
+        <div class="container">
+            <div id='LastExecs'>
+                
+            </div>
+            <div  id='ExecsCount'>
+                
+            </div>
+        </div>
+            
+           
+      
+       
+    </body>
+</html>
