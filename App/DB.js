@@ -84,10 +84,7 @@ class DB{
              .input('Id',sql.Int,id)
              .execute(`${exec}`)
              .then(result=>{
-                if(result.recordset == 0){
-                    return result.recordset.pop();
-                }
-                return result.recordset.length == 1 ? result.recordset.pop() : result.recordset;
+                return result.recordset.length <= 1 ? result.recordset.pop() : result.recordset;
              });            
          });    
     }
@@ -144,7 +141,6 @@ class DB{
             })
         })
     }
-
 
     UpdateCall(id,sender,receiver,time){
         return sql.connect(config).then(pool=>{
@@ -261,6 +257,29 @@ class DB{
         sql.connect(config).then(pool=>{
             pool.request()
             .execute("SetFreeNums")
+        })
+    }
+
+
+    //Monitoring Functions
+
+    GetLastExecs(){
+        return sql.connect(config).then(pool=>{
+            return pool.request()
+            .execute("LastExecs")
+            .then(result=>{
+                return result.recordset;
+            })
+        })
+    }
+
+    GetExecsCount(){
+        return sql.connect(config).then(pool=>{
+            return pool.request()
+            .execute("ProcExecsCount")
+            .then(result=>{
+                return result.recordset;
+            })
         })
     }
 

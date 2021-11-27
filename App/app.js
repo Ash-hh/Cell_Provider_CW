@@ -102,7 +102,7 @@ app.get('/api/findbyid/:exec/:id',(req,res)=>{
     }
 })
 
-app.route('/profile/:login')
+app.route('/profile/:login') //TODO: current task
     .get((req,res)=>{
 
         if(req.params.login){
@@ -113,13 +113,19 @@ app.route('/profile/:login')
         }
     })
     .post((req,res)=>{                
-        
+
+     
+
         if(req.cookies.User && req.cookies.User.Login === req.params.login){ 
-           
-            res.json({
-                User:req.cookies.User,
-                IsAdmin: req.cookies.User.User_Type == 1 ? 1 : 0
-            });
+
+            DB.FindById('FindUserNumbers',req.cookies.User.User_Id)
+            .then((records)=>{
+                res.json({
+                    User:req.cookies.User,
+                    IsAdmin: req.cookies.User.User_Type == 1 ? 1 : 0,
+                    Numbers:records
+                });
+            })
 
         } else {
 
@@ -128,6 +134,8 @@ app.route('/profile/:login')
 
                 if(records){
                     if(req.cookies.User && req.cookies.User.User_Type == 1){
+
+                        delete records.Password;
                         res.json({
                             User:records
                         });
@@ -141,8 +149,7 @@ app.route('/profile/:login')
                 }                
             })
             
-        }        
-        
+        }
     })
 
 app.route('/subtariff') //TODO: rotate to profile.html 
@@ -184,27 +191,40 @@ app.route('/subtariff') //TODO: rotate to profile.html
        
     })
 
-app.post('/api/admin/:exec/:id',(req,res)=>{
-    
-    if(req.params.exec != 'AddTariff'){
-        DB[req.params.exec](req.params.id,req.body)
-    } else {
-        console.log('body')
-        console.log(req.body)
-        DB[req.params.exec](req.body)
-    }
+app.route('/api/admin/:exec/:id')
+    .post((req,res)=>{
+        if(req.params.exec != 'AddTariff'){
+            DB[req.params.exec](req.params.id,req.body)
+        } else {
+            console.log('body')
+            console.log(req.body)
+            DB[req.params.exec](req.body)
+        }
 
-    res.end();
+        res.end();
+    })
+    .get((req,res)=>{ 
+        console.log(req.params.exec)
+        DB[req.params.exec]()
+        .then(records=>{            
+            res.json(records);
+        })
+    })
 
-})
 
 
 
-app.route('/Admin')
+app.route('/Admin/:page')
     .get((req,res)=>{
+
         if(req.cookies.User){           
             if(req.cookies.User.User_Type == 1){
-                res.sendFile(__dirname+'/resources/adminpage.html')
+                
+                switch(req.params.page){
+                    case 'monitor' : res.sendFile(__dirname+'/resources/monitorpage.html'); break;
+                    case 'main':  res.sendFile(__dirname+'/resources/adminpage.html'); break;
+                }
+               
             } else {
                 res.redirect('/')  
             }

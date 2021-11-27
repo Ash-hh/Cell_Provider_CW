@@ -20,12 +20,14 @@ end;
 go
 
 go
-create procedure FindNumberByUserId
+alter procedure FindNumberByUserId
 	@Id int
 as
 begin
-	select * from NUMBERS where User_Id = @Id
+	select * from NUMBERS where User_Id = @Id;
 end;
+
+
 
 go
 create procedure FindTariffByNumber 
@@ -35,6 +37,21 @@ begin
 	select * from TARIFFS where Tariff_Id = (select Tariff_Id from NUMBERS where Number = @Number)
 end;
 go
+
+
+
+go
+create procedure FindUserNumbers
+(
+	@Id int
+)
+as
+	begin
+		select * from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id
+	end;
+go
+
+
 
 
 

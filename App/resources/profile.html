@@ -1,11 +1,68 @@
 <!DOCTYPE html>
 <html>
+    <style>
+        #popup{
+             width:100%;
+             min-height:100%;
+             background-color: rgba(0,0,0,0.5);
+             overflow:hidden;
+             position:fixed;
+             top:0px;
+             visibility: hidden;
+             
+         }
+         #popup #popup_content{
+             margin:40px auto 0px auto;
+             width:420px;
+             height: 90px;
+             padding:10px;
+             background-color: #c5c5c5;
+             border-radius:5px;
+             box-shadow: 0px 0px 10px #000;
+         }       
+    </style>
     <script>
+
+        function PopUpHide(){
+            popup.style.visibility = "hidden";               
+        }
+        
+        function PopUpShow(){
+            popup.style.visibility = "visible" 
+        }
+
+        function profileController(value){
+            console.log(value)
+            value = JSON.parse(value)
+            switch(value.exec){
+                case 'UpdateBallance': alert(value.exec); break;
+                case 'DeleteUser': alert(value.exec); break;
+            }
+        }
+
+        function AuthorizedUserInfo(data){
+            ProfileInfo.innerHTML += `
+                <p>Ballance: ${data.User.Ballance}
+                    <button
+                        value='{"id":"${data.User.User_Id}","exec":"UpdateBallance"}'
+                        onclick="profileController(this.value)">
+                    Top up</button> 
+                </p>
+                <button
+                    value='{"id":"${data.User.User_Id}","exec":"DeleteUser"}'
+                    onclick="profileController(this.value)">
+                Delete My Account </button>    
+                <hr>
+            `
+        }
+
         function load(){  
             
+            let urlstr = 'http://localhost:5000/';
+
             let login = document.URL
             .slice(document.URL
-                    .indexOf('/profile')+'/profile'.length+1,
+            .indexOf('/profile')+'/profile'.length+1,
                     document.URL.length) 
            
             fetch(`${document.URL}`,{
@@ -14,18 +71,40 @@
             .then(result=>{                
                 return result.json();
             })
-            .then((data)=>{
-             
-
-               if(data.User_Type == 1 && data.Login == login){
-                   console.log('Admin')
-               }
+            .then((data)=>{           
+                console.log(data);
+                
+                ProfileInfo.innerHTML = `
+                <div>
+                    <h3>Profile Information </h3>
+                    <p>${data.User.User_Type = 1 ? 'Admin' : 'User'} login: ${data.User.Login} </p>
+                    <p>Name: ${data.User.User_Name} ${data.User.User_Surname} ${data.User.User_MidName}</p>
+                    <p>Status: ${data.User.IsActive ? 'Active' : 'Not Active'} </p>
+                </div> 
+                `
+                if(data.hasOwnProperty('Numbers')){
+                    AuthorizedUserInfo(data);
+                }
             })
         }
     </script>
     <body onload="load()">
-        <h1>Profile</h1>
-        <div id='result'>
+        <header>
+            <a href='http://localhost:5000/'>Main</a>
+            <a href='http://localhost:5000/Call'>Call</a>
+            <a href='http://localhost:5000/logout'>Log Out</a>
+        </header>
+
+        <div id="popup">
+            <div id="popup_content">
+               
+            </div>
+        </div>
+
+        <div id='ProfileInfo'>
+
+        </div>
+        <div id='NumbersInfo'>
             
         </div>
     </body>
