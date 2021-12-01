@@ -54,8 +54,6 @@
                
 
                 value = JSON.parse(value)
-                console.log(id,name,Tariff)
-                console.log(value)
                 
                 let searchelem = arr.find(user => user[name] == id);
                 
@@ -63,7 +61,6 @@
 
                 if(value.exec.indexOf('Delete')==-1){
                     if(!Tariff && value.exec.indexOf('Update')!=-1){
-                        console.log('FFFFF')
                         if(value.property === 'User_Type'){
                             searchelem[value.property] = searchelem[value.property] == 1 ? 2 : 1;
                         } else{
@@ -147,7 +144,7 @@
                             name="User_Id" 
                             value='{"exec":"UpdateUser","property":"User_Type"}' 
                             onclick="ControllerFunc(this.id,this.name, this.value)">
-                        ${element.User_Type == 1 ? 'Grant Admin':'Revoke Admin'} </button>    
+                        ${element.User_Type == 1 ? 'Revoke Admin':'Grant Admin'} </button>    
                        
                         <button 
                             id="${element.User_Id}" 
@@ -277,7 +274,7 @@
                 if(mode === 'Edit'){
 
                     popup_content.innerHTML = `
-                
+                    <input type='button' value='close' onclick='PopUpHide()'>
                     <form name="TariffForm">
                         <label name="id" id="${id}">Edit Tariff Id: ${id}</label>
                         <br>
@@ -291,7 +288,7 @@
                 } else if (mode === 'Delete'){
                     
                     popup_content.innerHTML =`
-                    
+                    <input type='button' value='close' onclick='PopUpHide()'>
                     <form name="TariffFormAdd">
                         <label> Description </label>
                         <input type="text" name="Description">
