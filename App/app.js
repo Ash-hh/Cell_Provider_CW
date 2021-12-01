@@ -46,8 +46,8 @@ app.route('/login')
                     if(records.Password === req.body.password){
                         if(records.User_Type != 1){ 
                             delete records.User_Type;
-                        }  
-                        delete records.Date_Birth;      
+                        } 
+                          
                         delete records.Password;       
                         res.cookie('User',records);
                         console.log('ok');
@@ -102,7 +102,45 @@ app.get('/api/findbyid/:exec/:id',(req,res)=>{
     }
 })
 
-app.route('/profile/:login') //TODO: current task
+
+app.post('/api/user',(req,res)=>{ //TODO: current task
+
+    if(req.body.hasOwnProperty('userObj')){
+        if(req.body.userObj.hasOwnProperty('Ballance')){
+            console.log(req.body)
+            DB.UpdateUser(req.body.id,req.body.userObj);
+            req.cookies.User.Ballance = req.body.userObj.Ballance;
+            res.cookie('User',req.cookies.User)
+            
+            res.end('ok')
+        } else {
+            console.log(req.body)
+            DB.UpdateUser(req.body.id,req.body.userObj)
+            
+            res.clearCookie('User');  
+            res.redirect('/');     
+        }
+    } else {
+        async function awaitDelete(){
+            await  DB.DeleteNumber(req.body.id)
+        }
+        
+        awaitDelete()
+
+        DB.FindById('FindUserNumbers',req.cookies.User.User_Id)
+        .then(records=>{
+            res.json({
+                IsLogin:true,
+                User:req.cookies.User,             
+                Numbers:records
+            })
+        })
+    }
+    
+
+})
+
+app.route('/profile/:login') 
     .get((req,res)=>{
 
         if(req.params.login){
@@ -117,12 +155,12 @@ app.route('/profile/:login') //TODO: current task
      
 
         if(req.cookies.User && req.cookies.User.Login === req.params.login){ 
-
+            
             DB.FindById('FindUserNumbers',req.cookies.User.User_Id)
             .then((records)=>{
                 res.json({
+                    IsLogin:true,
                     User:req.cookies.User,
-                    IsAdmin: req.cookies.User.User_Type == 1 ? 1 : 0,
                     Numbers:records
                 });
             })
@@ -137,6 +175,7 @@ app.route('/profile/:login') //TODO: current task
 
                         delete records.Password;
                         res.json({
+                            IsLogin:false,
                             User:records
                         });
     
@@ -144,7 +183,10 @@ app.route('/profile/:login') //TODO: current task
                         
                         delete records.User_Type;                       
                         delete records.Password;
-                        res.json(records);
+                        res.json({
+                            IsLogin:false,
+                            User:records
+                        });
                     }
                 }                
             })
@@ -171,7 +213,7 @@ app.route('/subtariff') //TODO: rotate to profile.html
         DB.GetNumber()
         .then(result=>{            
             number = result;
-
+            console.log(number)
             DB.AddNumber(
                 number,
                 req.cookies.User.User_Id,
@@ -214,8 +256,7 @@ app.route('/api/admin/:exec/:id')
 
 
 
-app.route('/Admin/:page')
-    .get((req,res)=>{
+app.get('/Admin/:page',(req,res)=>{
 
         if(req.cookies.User){           
             if(req.cookies.User.User_Type == 1){
@@ -235,7 +276,7 @@ app.route('/Admin/:page')
         
     })  
 
-app.route('/call')
+app.route('/call') 
     .get((req,res)=>{
         res.sendFile(__dirname+'/resources/call.html')
     })

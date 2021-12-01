@@ -28,8 +28,6 @@ begin
 end;
 
 
-
-go
 create procedure FindTariffByNumber 
 	@Number int
 as
@@ -39,17 +37,18 @@ end;
 go
 
 
-
+USE CELL_PROVIDER
 go
-create procedure FindUserNumbers
+alter procedure FindUserNumbers
 (
 	@Id int
 )
 as
 	begin
-		select * from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id
+		select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id
 	end;
 go
+exec FindUserNumbers 3
 
 
 
@@ -64,7 +63,14 @@ declare @num int
 begin
 	set @num = (select TOP (1)  Number from NUMBERS order by Number desc);
 	set @num = @num+1;
-	set @freenum = (select TOP(1) Number from ##FreeNumbers)
+
+	if exists (select * from tempdb.dbo.sysobjects	where name='##FreeNumbers' )
+	begin
+		if exists (select TOP(1) Number from ##FreeNumbers)
+		begin
+			set @freenum = (select TOP(1) Number from ##FreeNumbers)
+		end
+	end
 	print(@freenum)
 	if(@freenum is null)
 		begin
@@ -79,6 +85,7 @@ begin
 		end
 end
 go
+
 
 go 
 alter procedure SetFreeNums

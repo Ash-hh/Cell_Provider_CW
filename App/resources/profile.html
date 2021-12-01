@@ -22,6 +22,7 @@
          }       
     </style>
     <script>
+        let globalValue;
 
         function PopUpHide(){
             popup.style.visibility = "hidden";               
@@ -31,29 +32,163 @@
             popup.style.visibility = "visible" 
         }
 
-        function profileController(value){
-            console.log(value)
-            value = JSON.parse(value)
-            switch(value.exec){
-                case 'UpdateBallance': alert(value.exec); break;
-                case 'DeleteUser': alert(value.exec); break;
+        function BallanceUpdate(value){
+
+            PopUpShow();
+
+            globalValue = value;
+
+            BallanceUpdateButton.onclick = (event) =>{
+               
+                globalValue.ballance=parseInt(globalValue.ballance)+parseInt(ballancevalue.value)
+               
+                PopUpHide();
+                profileController(globalValue);
+
+            }
+        }       
+
+        function profileController(value){ 
+           
+            
+            let postBody;
+
+            switch(value.name){
+
+                case 'UserBallance':
+                    postBody= {
+                        id:value.id,
+                        userObj:{Ballance:value.ballance}
+                    }
+
+
+                break;
+
+                case 'UserDelete':
+                    if(confirm('??')){
+                        postBody= {
+                            id:value.id,
+                            userObj:{IsActive:false}
+                        } 
+                    }
+                break;
+
+                case 'NumberDelete':
+                    postBody={
+                        id:value.id,                       
+                    }
+                break;
+                default:return 0;
+            }   
+
+
+           
+            
+            fetch('http://localhost:5000/api/user',{
+                method:'POST',                   
+                headers:{'Content-Type':'application/json'},
+               
+                body:JSON.stringify(postBody)                
+            }).then(result=>{
+                if(result.redirected){
+                 
+                   window.location.href = result.url                   
+                   
+                } else if(result.ok){
+                    return  result.json();
+                }
+            }).then(data=>{
+                if(value.name === 'NumberDelete'){
+                    UserInfo(data);
+                    
+                }
+            })
+
+            
+        }
+     
+        function UserInfo(data){
+           
+            NumbersInfo.innerHTML = '';
+
+            ProfileInfo.innerHTML = `
+                <div>
+                    <h3>Profile Information </h3>
+                    <p>${data.User.User_Type = 1 ? 'Admin' : 'User'} login: ${data.User.Login} </p>
+                    <p>Name: ${data.User.User_Name} ${data.User.User_Surname} ${data.User.User_MidName}</p>
+                    <p>Status: ${data.User.IsActive ? 'Active' : 'Not Active'} </p>
+                </div> 
+            `
+
+            if(data.IsLogin){
+                AuthorizedUserInfo(data);
             }
         }
-
+        
         function AuthorizedUserInfo(data){
             ProfileInfo.innerHTML += `
                 <p>Ballance: ${data.User.Ballance}
                     <button
-                        value='{"id":"${data.User.User_Id}","exec":"UpdateBallance"}'
-                        onclick="profileController(this.value)">
+                        name="UserBallance"
+                        value='${data.User.User_Id}'
+                        onclick="BallanceUpdate({id:this.value,name:this.name,ballance:${data.User.Ballance}})">
                     Top up</button> 
                 </p>
                 <button
-                    value='{"id":"${data.User.User_Id}","exec":"DeleteUser"}'
-                    onclick="profileController(this.value)">
+                    name="UserDelete"
+                    value='${data.User.User_Id}'
+                    onclick="profileController({id:this.value,name:this.name})">
                 Delete My Account </button>    
                 <hr>
             `
+
+            if(data.hasOwnProperty('Numbers')){
+
+                let NumsTable = document.createElement("table");
+
+                let tableHeader = NumsTable.insertRow();
+                tableHeader.insertCell().innerHTML='Number'
+                tableHeader.insertCell().innerHTML='Tariff'
+                tableHeader.insertCell().innerHTML='Call Cost'
+                tableHeader.insertCell().innerHTML='Date open'
+
+                   
+
+                if(data.Numbers.length >1){
+                    data.Numbers.forEach(element => {
+                        let row = NumsTable.insertRow();
+
+                        row.insertCell().append(element.Number)
+                        row.insertCell().append(element.Description)
+                        row.insertCell().append(element.Call_Cost_perm)
+                        row.insertCell().append(element.Date_Open)
+
+                        row.insertCell().innerHTML =`
+                            <button
+                                id="${element.Number_Id}"
+                                name="DeleteNumber"
+                                onclick="profileController({id:this.id,name:'NumberDelete'})">
+                            Delete Number</button>
+                        `
+                    })  
+                } else {
+                    let row = NumsTable.insertRow();
+
+                    row.insertCell().append(data.Numbers.Number)
+                    row.insertCell().append(data.Numbers.Description)
+                    row.insertCell().append(data.Numbers.Call_Cost_perm)
+                    row.insertCell().append(data.Numbers.Date_Open)
+                    row.insertCell().innerHTML =`
+                        <button
+                            id="${data.Numbers.Number_Id}"
+                            name="DeleteNumber"
+                            onclick="profileController({id:this.id,name:'NumberDelete'})">
+                        Delete Number</button>
+                    `
+                }
+            
+                NumbersInfo.append(NumsTable)
+            }
         }
 
         function load(){  
@@ -72,19 +207,10 @@
                 return result.json();
             })
             .then((data)=>{           
-                console.log(data);
+              
                 
-                ProfileInfo.innerHTML = `
-                <div>
-                    <h3>Profile Information </h3>
-                    <p>${data.User.User_Type = 1 ? 'Admin' : 'User'} login: ${data.User.Login} </p>
-                    <p>Name: ${data.User.User_Name} ${data.User.User_Surname} ${data.User.User_MidName}</p>
-                    <p>Status: ${data.User.IsActive ? 'Active' : 'Not Active'} </p>
-                </div> 
-                `
-                if(data.hasOwnProperty('Numbers')){
-                    AuthorizedUserInfo(data);
-                }
+                UserInfo(data);
+                
             })
         }
     </script>
@@ -97,7 +223,7 @@
 
         <div id="popup">
             <div id="popup_content">
-               
+                
             </div>
         </div>
 
