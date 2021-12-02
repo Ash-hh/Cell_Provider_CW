@@ -50,7 +50,7 @@ class DB{
         })
     }
 
-    AddCall(Sender,Receiver,Time){
+    AddCall(Sender,Receiver,Time){ //FIXME: useless
 
         return sql.connect(config).then(pool=>{
             return pool.request()
@@ -100,7 +100,7 @@ class DB{
         });    
     }
 
-    FindNumberByNumber(number,number_receiver=undefined){
+    FindNumberByNumber(number,number_receiver=undefined){ //FIXME: useless?
         return sql.connect(config).then(pool=>{
             let result = pool.request()
             .input('number',sql.Int,number);
@@ -116,7 +116,7 @@ class DB{
         })
     }
 
-    FindNumberByNumberSynch(number,callback){
+    FindNumberByNumberSynch(number,callback){ //FIXME: useless?
         sql.connect(config).then(pool=>{
             let result = pool.request()
             .input('number',sql.Int,number);
@@ -130,7 +130,7 @@ class DB{
 
 
 
-    FindTariffByNum(number){
+    FindTariffByNum(number){ //FIXME: useless?
         
         return sql.connect(config).then(pool=>{
             return pool.request()
@@ -142,7 +142,7 @@ class DB{
         })
     }
 
-    UpdateCall(id,sender,receiver,time){
+    UpdateCall(id,sender,receiver,time){ //FIXME: useless?
         return sql.connect(config).then(pool=>{
             return pool.request()
             .input('Id',sql.Int,id)
@@ -202,7 +202,8 @@ class DB{
         });
     }
 
-
+    
+    //TODO: Union start
     DeleteUser(id){
         sql.connect(config).then(pool=>{
             pool.request().input('Id',sql.Int,id).execute('UserDelete')
@@ -226,6 +227,7 @@ class DB{
             pool.request().input('Id',sql.Int,id).execute('CallDelete')
         });
     }
+      //TODO: Union end
 
     DeleteFromTable(id,exec){
         sql.connect(config).then(pool=>{
