@@ -101,15 +101,14 @@ Begin TRY
 	set IDENTITY_INSERT TARIFFS OFF
 
 	set IDENTITY_INSERT NUMBERS ON
-	INSERT INTO NUMBERS(Number_Id,Number,User_Id,Tariff_Id,Date_Open,IsActive,Ballance)
+	INSERT INTO NUMBERS(Number_Id,Number,User_Id,Tariff_Id,Date_Open)
 	SELECT
 	   MY_XML.NUMBERS.query('Number_Id').value('.', 'INT'),
 	   MY_XML.NUMBERS.query('Number').value('.', 'INT'),
 	   MY_XML.NUMBERS.query('User_Id').value('.', 'INT'),
 	   MY_XML.NUMBERS.query('Tariff_Id').value('.', 'INT'),
-	   MY_XML.NUMBERS.query('Date_Open').value('.', 'DATE'),
-	   MY_XML.NUMBERS.query('IsActive').value('.', 'BIT'),
-	   MY_XML.NUMBERS.query('Ballance').value('.', 'MONEY')
+	   MY_XML.NUMBERS.query('Date_Open').value('.', 'DATE')
+	 
 	FROM (SELECT CAST(MY_XML AS xml)
 		  FROM OPENROWSET(BULK N'F:\3_course\DB\Course_Project\XML\NUMBERS.xml', SINGLE_BLOB) AS T(MY_XML)) AS T(MY_XML)
 		  CROSS APPLY MY_XML.nodes('NUMBERS_ROOT/NUMBERS') AS MY_XML (NUMBERS);
@@ -130,6 +129,7 @@ Begin TRY
 	return 0
 End TRY
 BEGIN catch
+	
 	return -1;
 END catch
 go
@@ -149,6 +149,8 @@ end;
 go
 
 exec DeleteAll
+
+use CELL_PROVIDER
 
 select *  from CALLS
 select * FROM USER_TYPE

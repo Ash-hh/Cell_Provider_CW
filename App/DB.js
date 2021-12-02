@@ -35,15 +35,13 @@ class DB{
         })    
     }    
 
-    AddNumber(Number,UserId,TariffId,DateOpen,Active,Ballance){
+    AddNumber(Number,UserId,TariffId,DateOpen){
         sql.connect(config).then(pool=>{
             return pool.request()
             .input('Number',sql.Int,Number)
             .input('UserId',sql.Int,UserId)
             .input('TariffId',sql.Int,TariffId)
-            .input('DateOpen',sql.Date,DateOpen)
-            .input('Active',sql.Bit,Active)
-            .input('Ballance',sql.Money,Ballance)
+            .input('DateOpen',sql.Date,DateOpen)           
             .execute('NumberAdd')
         }).catch(err=>{
             console.log(err);
@@ -84,6 +82,7 @@ class DB{
              .input('Id',sql.Int,id)
              .execute(`${exec}`)
              .then(result=>{
+                 console.log(result)
                 return result.recordset.length <= 1 ? result.recordset.pop() : result.recordset;
              });            
          });    
@@ -142,9 +141,7 @@ class DB{
             if (NumberObject.hasOwnProperty('User_Id')) result.input('UserId',sql.Int,NumberObject.User_Id);
             if (NumberObject.hasOwnProperty('Tariff_Id')) result.input('TariffId',sql.Int,NumberObject.Tariff_Id);
             if (NumberObject.hasOwnProperty('Date_Open')) result.input('DateOpen',sql.Date,NumberObject.Date_Open);
-            if (NumberObject.hasOwnProperty('IsActive')) result.input('Active',sql.Bit,NumberObject.IsActive);
-            if (NumberObject.hasOwnProperty('Ballance')) result.input('Ballance',sql.Int,NumberObject.Ballance);
-
+          
             return result.execute('NumberUpdate'); 
         })
     } 

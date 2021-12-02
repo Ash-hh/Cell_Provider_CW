@@ -48,10 +48,10 @@ app.route('/login')
                             
                             delete records.Password;       
                             res.cookie('User',records);
-                            console.log('ok');
+                           
                             res.redirect('/');                       
                         } else {
-                            console.log('ne ok');
+                            
                             res.redirect('/login');
                         }
                     } else {
@@ -86,15 +86,14 @@ app.get('/api/all/:exec',(req,res)=>{
 
 app.get('/api/findbyid/:exec/:id',(req,res)=>{
     if(req.params.id && req.params.exec){
-      
+        console.log(req.params)
         let id = req.params.id === 'cookie' ? 
         (req.cookies.User ? req.cookies.User.User_Id : undefined)
         : req.params.id;
 
         DB.FindById(req.params.exec,id)
         .then(records=>{
-            if(records){
-                
+            if(records){                
                 res.json(records);
             } else {
                 res.sendStatus(404);               
@@ -215,14 +214,12 @@ app.route('/subtariff')
         DB.GetNumber()
         .then(result=>{            
             number = result;
-            console.log(number)
+           
             DB.AddNumber(
                 number,
                 req.cookies.User.User_Id,
                 req.query.id,
-                '2021-01-01',
-                1,
-                0
+                '2021-01-01'
             );
         
             res.send(`Your number is ${number}`)
@@ -235,7 +232,7 @@ app.route('/subtariff')
        
     })
 
-app.route('/api/admin/:exec/:id')
+app.route('/api/admin/:exec/:id') 
     .post((req,res)=>{
         if(req.params.exec != 'AddTariff'){
             DB[req.params.exec](req.params.id,req.body)
@@ -256,7 +253,7 @@ app.route('/api/admin/:exec/:id')
                 res.json(records);
             })
         } else {
-            console.log(req.params.exec)
+         
             DB.XMLFunc(req.params.exec,(result)=>{
                 
                 switch(result){
@@ -301,7 +298,7 @@ app.route('/call')
 
             DB.StartCall(req.body.sender,req.body.receiver,(req.body.min*60)+req.body.second)
             .then(records=>{
-                console.log(records);
+               
                 res.end(`${records}`);
             })
 
@@ -318,7 +315,7 @@ app.route('/call')
             ).then(records=>{     
                 if(User){
                     let BuffUser=req.cookies.User;
-                    BuffUser.Ballance = req.body.userObj.Ballance;
+                    BuffUser.Ballance = records.Ballance;
                     res.cookie('User',BuffUser)
                 }          
                 res.end(`call cost: ${records.Bill} account ballance: ${records.Ballance}`)

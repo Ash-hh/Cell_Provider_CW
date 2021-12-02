@@ -146,19 +146,17 @@ use CELL_PROVIDER
 --NumberAdd
 go 
 
-
+use CELL_PROVIDER
 alter procedure NumberAdd
 	@Number int,
 	@UserId int,
 	@TariffId int,
-	@DateOpen date,
-	@Active bit,
-	@Ballance money
+	@DateOpen date
 as
 begin
-	insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open,IsActive,Ballance)
+	insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open)
 	values
-	(@Number,@UserId,@TariffId,@DateOpen,@Active,@Ballance);
+	(@Number,@UserId,@TariffId,@DateOpen);
 end;
 
 --NumberUpdate
@@ -168,18 +166,15 @@ alter procedure NumberUpdate
 	@Number int = NULL,
 	@UserId int = NULL,
 	@TariffId int = NULL,
-	@DateOpen date = NULL,
-	@Active bit = NULL,
-	@Ballance money = NULL
+	@DateOpen date = NULL
 as
 begin
 	update NUMBERS
 		SET Number = IsNull(@Number,Number),
 			User_Id=IsNull(@UserId,User_Id),
 			Tariff_Id=IsNull(@TariffId,Tariff_Id),
-			Date_Open=IsNull(@DateOpen,Date_Open),
-			IsActive=IsNull(@Active,IsActive),
-			Ballance = IsNull(@Ballance,Ballance)
+			Date_Open=IsNull(@DateOpen,Date_Open)
+	
 		where Number_Id = @Id
 end;
 go

@@ -2,9 +2,6 @@
 <html>
     <head>
         <style>
-       
-           
-
             #popup, #awaitPopUp{
                 width:100%;
                 min-height:100%;
@@ -216,8 +213,7 @@
                 tableHeader.insertCell().innerHTML = 'User Id'
                 tableHeader.insertCell().innerHTML = 'Tariff Id'
                 tableHeader.insertCell().innerHTML = 'Open Date'
-                tableHeader.insertCell().innerHTML = 'Activity'
-                tableHeader.insertCell().innerHTML = 'Ballance'
+              
 
                 numberArr.forEach(element => {
                     let row = NumberTable.insertRow()
@@ -226,16 +222,10 @@
                         row.insertCell().append(element.User_Id)
                         row.insertCell().append(element.Tariff_Id)
                         row.insertCell().append(element.Date_Open)
-                        row.insertCell().append(element.IsActive == 1 ? 'Active' : 'Not Active')
-                        row.insertCell().append(element.Ballance)                        
+                             
                         
                         let numberController = row.insertCell().innerHTML = ` 
-                        <button 
-                            id="${element.Number_Id}" 
-                            name="Number_Id" 
-                            value='{"exec":"UpdateNumber","property":"IsActive"}' 
-                            onclick="ControllerFunc(this.id, this.name, this.value)">
-                        ${element.IsActive ? 'Disactivate' : 'Activate' } </button>
+                       
                        
                         <button 
                             id="${element.Number_Id}" 
