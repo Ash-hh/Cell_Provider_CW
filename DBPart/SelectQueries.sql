@@ -23,6 +23,8 @@ go
 
 --Call procedures
 
+exec CallStart 0,1,3
+
 go
 alter procedure CallStart
 	@senderNumber int,
@@ -34,7 +36,7 @@ begin
 	declare @receiver int =  dbo.FindUser_IdByNumber(@receiverNumber)
 
 	declare @call_id int
-	exec @call_id = CallAdd @sender,@receiver,@time;
+	exec @call_id = CallAdd @sender,@senderNumber,@receiver,@receiverNumber,@time,0;
 
 	return @call_id
 end;
@@ -67,7 +69,7 @@ begin
 	declare @User_Ballance int = (select Ballance from USERS where User_Id = @User_Id)
 	set @User_Ballance = @User_Ballance - @bill;
 	exec UserUpdate @User_Id,@Ballance= @User_Ballance;
-	exec CallUpdate @Id = @callid, @Call_Time = @timeEnd;
+	exec CallUpdate @Id = @callid, @Call_Time = @timeEnd,@Call_Cost=@bill;
 
 	select @bill as Bill,Ballance from USERS where User_Id = @User_Id;
 end;

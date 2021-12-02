@@ -6,6 +6,12 @@ alter procedure ExportToXML
 )
 as
 begin
+
+	EXEC master.dbo.sp_configure 'show advanced options', 1
+		reconfigure with override
+	EXEC master .dbo.sp_configure 'xp_cmdshell', 1
+		reconfigure with override;
+
 	declare @fileName nvarchar(100)
 	declare @sqlStr varchar(1000)
 	declare @sqlCmd varchar(1000)
@@ -115,12 +121,15 @@ Begin TRY
 	set IDENTITY_INSERT NUMBERS OFF
 
 	set IDENTITY_INSERT CALLS ON
-	INSERT INTO CALLS (Call_Id,User_Sender_Id,User_Receiver_Id,Call_Time)
+	INSERT INTO CALLS (Call_Id,User_Sender_Id,User_Sender_Number,User_Receiver_Id,User_Receiver_Number, Call_Time,Call_Cost)
 	SELECT
 	   MY_XML.CALLS.query('Call_Id').value('.', 'INT'),
 	   MY_XML.CALLS.query('User_Sender_Id').value('.', 'INT'),
+	   MY_XML.CALLS.query('User_Sender_Number').value('.', 'INT'),
 	   MY_XML.CALLS.query('User_Receiver_Id').value('.', 'INT'),
-	   MY_XML.CALLS.query('Call_Time').value('.', 'INT')
+	   MY_XML.CALLS.query('User_Receiver_Number').value('.', 'INT'),
+	   MY_XML.CALLS.query('Call_Time').value('.', 'INT'),
+	   MY_XML.CALLS.query('Call_Cost').value('.', 'MONEY')
 	FROM (SELECT CAST(MY_XML AS xml)
 		  FROM OPENROWSET(BULK N'F:\3_course\DB\Course_Project\XML\CALLS.xml', SINGLE_BLOB) AS T(MY_XML)) AS T(MY_XML)
 		  CROSS APPLY MY_XML.nodes('CALLS_ROOT/CALLS') AS MY_XML (CALLS);
@@ -133,9 +142,12 @@ BEGIN catch
 	return -1;
 END catch
 go
-
+exec ExportAllToXML
 exec ImportFromXml
-go
+
+
+
+
 create procedure DeleteAll
 as
 begin

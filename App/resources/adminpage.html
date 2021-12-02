@@ -246,14 +246,23 @@
                 let tableHeader = CallTable.insertRow();
 
                 tableHeader.insertCell().innerHTML = 'Id'
-                tableHeader.insertCell().innerHTML = 'Sender'
-                tableHeader.insertCell().innerHTML = 'Receiver'
+                tableHeader.insertCell().innerHTML = 'Sender Id'
+                tableHeader.insertCell().innerHTML = 'Sender Number'
+                tableHeader.insertCell().innerHTML = 'Receiver Id'
+                tableHeader.insertCell().innerHTML = 'Receiver Number'
+                tableHeader.insertCell().innerHTML = 'Time (sec)'
+                tableHeader.insertCell().innerHTML = 'Cost'
+               
 
                 callArr.forEach(element => {
                     let row = CallTable.insertRow()
                         row.insertCell().append(element.Call_Id)
                         row.insertCell().append(element.User_Sender_Id)
+                        row.insertCell().append(element.User_Sender_Number)
                         row.insertCell().append(element.User_Receiver_Id)
+                        row.insertCell().append(element.User_Receiver_Number)
+                        row.insertCell().append(element.Call_Time)
+                        row.insertCell().append(element.Call_Cost)
                         
                         let callController = row.insertCell().innerHTML = ` 
                         <button 
