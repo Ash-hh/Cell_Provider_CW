@@ -8,6 +8,7 @@ values
 ('Tarif nu prosta bomba',2),
 ('Pushka a ne tarif',3);
 
+
 select * from USERS;
 
 insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open,IsActive,Ballance)

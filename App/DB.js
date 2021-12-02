@@ -260,6 +260,22 @@ class DB{
         })
     }
 
+    //Xml Functions
+    XMLFunc(exec,callback){
+        sql.connect(config).then(pool=>{
+            pool.request()
+            .execute(exec)
+            .then(result=>{   
+                console.log(result);          
+                callback(result.returnValue);
+            })
+        }).catch(err=>{
+            console.log(err.message)
+            callback(-2)
+        })
+
+        
+    }
 
     //Monitoring Functions
 
@@ -282,6 +298,8 @@ class DB{
             })
         })
     }
+
+
 
 }
 

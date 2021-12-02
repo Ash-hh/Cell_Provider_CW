@@ -113,7 +113,7 @@ app.post('/api/user',(req,res)=>{
             req.cookies.User.Ballance = req.body.userObj.Ballance;
             res.cookie('User',req.cookies.User)
             
-            res.end('ok')
+            
         } else {
             console.log(req.body)
             DB.UpdateUser(req.body.id,req.body.userObj)
@@ -195,7 +195,7 @@ app.route('/profile/:login')
         }
     })
 
-app.route('/subtariff') //TODO: rotate to profile.html 
+app.route('/subtariff') 
     .get((req,res)=>{
         if(req.query.id){   
             if(req.cookies.User){
@@ -247,11 +247,24 @@ app.route('/api/admin/:exec/:id')
         res.end();
     })
     .get((req,res)=>{ 
-        console.log(req.params.exec)
-        DB[req.params.exec]()
-        .then(records=>{            
-            res.json(records);
-        })
+      
+
+        if(req.params.exec.indexOf('Xml')==-1){
+            DB[req.params.exec]()
+            .then(records=>{            
+                res.json(records);
+            })
+        } else {
+            console.log(req.params.exec)
+            DB.XMLFunc(req.params.exec,(result)=>{
+                
+                switch(result){
+                    case 0: res.end('Operation Succesfully done'); break;
+                    case -1: res.end('Import end with errors'); break;
+                    default: res.end('Export done with error'); break;
+                }
+            })
+        }
     })
 
 

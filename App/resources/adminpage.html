@@ -3,50 +3,65 @@
     <head>
         <style>
        
+           
 
-
-       #popup{
-            width:100%;
-            min-height:100%;
-            background-color: rgba(0,0,0,0.5);
-            overflow:hidden;
-            position:fixed;
-            top:0px;
-            
-        }
-        #popup #popup_content{
-            margin:40px auto 0px auto;
-            width:420px;
-            height: 90px;
-            padding:10px;
-            background-color: #c5c5c5;
-            border-radius:5px;
-            box-shadow: 0px 0px 10px #000;
-        }       
+            #popup, #awaitPopUp{
+                width:100%;
+                min-height:100%;
+                background-color: rgba(0,0,0,0.5);
+                overflow:hidden;
+                position:fixed;
+                visibility: hidden;
+                top:0px;
+                
+            }
+            #popup #popup_content{
+                margin:40px auto 0px auto;
+                width:420px;
+                height: 90px;
+                padding:10px;
+                background-color: #c5c5c5;
+                border-radius:5px;
+                box-shadow: 0px 0px 10px #000;
+            }       
         </style>
     </head>
-    <body onload="PopUpHide()">
+    <body>
         <script>
                 
             let arr=[];     
                 
             function send(Button_Value){
 
-                fetch(`http://localhost:5000/api/all/${Button_Value}`)
-                .then(result=>{
-                    return result.json()
-                }).then(data=>{
+                if(Button_Value.indexOf('Xml')==-1){
+                    fetch(`http://localhost:5000/api/all/${Button_Value}`)
+                    .then(result=>{
+                        return result.json()
+                    }).then(data=>{
 
-                    arr = data;
+                        arr = data;
 
-                    switch(Button_Value){
-                        case 'AllUsers' : UsersInterface(arr); break;
-                        case 'AllTariffs' : TariffInterface(arr); break;
-                        case 'AllNumbers' : NumberInterface(arr); break;
-                        case 'AllCalls' : CallInterface(arr); break;
-                    }
-                    
-                })
+                        switch(Button_Value){
+                            case 'AllUsers' : UsersInterface(arr); break;
+                            case 'AllTariffs' : TariffInterface(arr); break;
+                            case 'AllNumbers' : NumberInterface(arr); break;
+                            case 'AllCalls' : CallInterface(arr); break;
+                        }
+                        
+                    })
+                } else {
+                    console.log(Button_Value)
+                    awaitPopUp.style.visibility = 'visible';
+
+                    fetch(`http://localhost:5000/api/admin/${Button_Value}/0`)
+                    .then(result =>{
+                        return result.text()
+                    }).then(data=>{
+                        awaitPopUp.style.visibility = 'hidden';
+                        alert(data);
+                        
+                    })
+                }
             }
 
             function ControllerFunc(id,name,value,Tariff=undefined){
@@ -331,7 +346,9 @@
 
         </script>
 
-
+        <div id="awaitPopUp">
+            <h1>This operation may take a few minutes...</h1>
+        </div>
         <div id="popup">
             <div id="popup_content">
                
@@ -342,7 +359,11 @@
             <input type='button' name="AllTariffs" value="AllTariffs" onclick="send(this.name)">
             <input type='button' name="AllNumbers" value="AllNumbers" onclick="send(this.name)">
             <input type='button' name="AllCalls" value="AllCalls" onclick="send(this.name)">
-            <input type='button' name="AddTariff"value="AddTariff" onclick="PopUpShow('Delete')">
+            <input type='button' name="AddTariff"value="AddTariff" onclick="PopUpShow('Delete')">            
+            <input type='button' name="ExportAllToXml"value="ExportAllToXml" onclick="send(this.name)">              
+            <input type='button' name="ImportFromXml"value="ImportFromXml" onclick="send(this.name)">
+                
+            </select>
         </div>
         <hr>
         <div id='resultDiv'>

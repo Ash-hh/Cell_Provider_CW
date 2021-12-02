@@ -56,9 +56,10 @@ create table CALLS
 );
 
 
-drop table USERS
+
 drop table CALLS
 drop table NUMBERS
+drop table USERS
 drop table TARIFFS
 drop table USER_TYPE
 
