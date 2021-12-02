@@ -48,8 +48,11 @@ create table CALLS
 (
 	Call_Id int identity(1,1) constraint CALL_PK primary key,
 	User_Sender_Id int constraint SENDER_FK foreign key references USERS(User_Id),
+	User_Sender_Number int,
 	User_Receiver_Id int constraint RECEIVER_FK foreign key references USERS(User_Id),
-	Call_Time int 
+	User_Receiver_Number int,
+	Call_Time int,
+	Call_Cost money
 );
 
 

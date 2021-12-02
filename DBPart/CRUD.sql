@@ -217,12 +217,27 @@ go
 go 
 alter procedure CallAdd
 	@User_Sender_Id int,
+	@User_Sender_Number int,
 	@User_Receiever_Id int,
-	@Call_Time int
+	@User_Receiver_Number int,
+	@Call_Time int,
+	@Call_Cost money = NULL
 as
 begin
-	insert into CALLS(User_Sender_Id, User_Receiver_Id,Call_Time)
-	values(@User_Sender_Id,@User_Receiever_Id,@Call_Time);
+	insert into CALLS(
+		User_Sender_Id,
+		User_Sender_Number, 
+		User_Receiver_Id,
+		User_Receiver_Number, 
+		Call_Time, 
+		Call_Cost)
+	values(
+		@User_Sender_Id,
+		@User_Sender_Number, 
+		@User_Receiever_Id,
+		@User_Receiver_Number,
+		@Call_Time,
+		@Call_Cost);
 
 	return (SELECT TOP 1 Call_Id FROM CALLS ORDER BY Call_Id DESC)
 end;
@@ -250,14 +265,20 @@ go
 alter procedure CallUpdate
 	@Id int,
 	@User_Sender_Id int =NULL,
+	@User_Sender_Number int =NULL,
 	@User_Receiever_Id int =NULL,
-	@Call_Time int=NULL
+	@User_Receiver_Number int =NULL,
+	@Call_Time int =NULL,
+	@Call_Cost money =NULL
 as
 begin
 	update CALLS
 	set User_Sender_Id = IsNull(@User_Sender_Id,User_Sender_Id),
 		User_Receiver_Id = IsNull(@User_Receiever_Id,User_Receiver_Id),
-		Call_Time = IsNull(@Call_Time,Call_Time)
+		Call_Time = IsNull(@Call_Time,Call_Time),
+		User_Sender_Number = ISNULL(@User_Sender_Number,User_Sender_Number),
+		User_Receiver_Number = ISNULL(@User_Receiver_Number,User_Receiver_Number),
+		Call_Cost = ISNULL(@Call_Cost,Call_Cost)
 	where Call_Id = @Id;
 end;
 
