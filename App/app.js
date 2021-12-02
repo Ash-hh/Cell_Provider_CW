@@ -105,17 +105,18 @@ app.get('/api/findbyid/:exec/:id',(req,res)=>{
 
 
 app.post('/api/user',(req,res)=>{ 
-
+    
     if(req.body.hasOwnProperty('userObj')){
         if(req.body.userObj.hasOwnProperty('Ballance')){
-            console.log(req.body)
             DB.UpdateUser(req.body.id,req.body.userObj);
-            req.cookies.User.Ballance = req.body.userObj.Ballance;
-            res.cookie('User',req.cookies.User)
+           
+            let BuffUser=req.cookies.User;
+            BuffUser.Ballance = req.body.userObj.Ballance;
+           
+            res.cookie('User', BuffUser);
+            res.end();
             
-            
-        } else {
-            console.log(req.body)
+        } else {           
             DB.UpdateUser(req.body.id,req.body.userObj)
             
             res.clearCookie('User');  
@@ -316,8 +317,9 @@ app.route('/call')
                 (req.body.min*60)+req.body.second
             ).then(records=>{     
                 if(User){
-                    req.cookies.User.Ballance = records.Ballance;
-                    res.cookie('User',req.cookies.User)
+                    let BuffUser=req.cookies.User;
+                    BuffUser.Ballance = req.body.userObj.Ballance;
+                    res.cookie('User',BuffUser)
                 }          
                 res.end(`call cost: ${records.Bill} account ballance: ${records.Ballance}`)
             })
