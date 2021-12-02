@@ -220,7 +220,7 @@ go
 
 --AddCall
 go 
-create procedure CallAdd
+alter procedure CallAdd
 	@User_Sender_Id int,
 	@User_Receiever_Id int,
 	@Call_Time int
@@ -229,7 +229,7 @@ begin
 	insert into CALLS(User_Sender_Id, User_Receiver_Id,Call_Time)
 	values(@User_Sender_Id,@User_Receiever_Id,@Call_Time);
 
-	SELECT TOP 1 * FROM CALLS ORDER BY Call_Id DESC
+	return (SELECT TOP 1 Call_Id FROM CALLS ORDER BY Call_Id DESC)
 end;
 
 --FindCall by Id
