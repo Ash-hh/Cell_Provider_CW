@@ -36,6 +36,9 @@
 
             PopUpShow();
 
+
+            //TODO:
+
             globalValue = value;
 
             BallanceUpdateButton.onclick = (event) =>{
@@ -44,6 +47,9 @@
                
                 PopUpHide();
                 profileController(globalValue);
+
+                BallanceValue.innerHTML=`Ballance: ${globalValue.ballance}`
+
 
             }
         }       
@@ -127,7 +133,7 @@
         
         function AuthorizedUserInfo(data){
             ProfileInfo.innerHTML += `
-                <p>Ballance: ${data.User.Ballance}
+                <p><span id='BallanceValue'>Ballance: ${data.User.Ballance}</span>
                     <button
                         name="UserBallance"
                         value='${data.User.User_Id}'
@@ -223,7 +229,8 @@
 
         <div id="popup">
             <div id="popup_content">
-                
+                <input type="number" id="ballancevalue">
+                <button id="BallanceUpdateButton" >Top Up</button>
             </div>
         </div>
 
