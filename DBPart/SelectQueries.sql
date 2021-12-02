@@ -9,34 +9,6 @@ begin
 end;
 ----------------------------
 
-go
-create procedure FindNumberByNum
-	@number int,
-	@number_rec int = 0
-as
-begin
-	select * from NUMBERS where Number = @number or Number = @number_rec
-end;
-go
-
-go
-alter procedure FindNumberByUserId
-	@Id int
-as
-begin
-	select * from NUMBERS where User_Id = @Id;
-end;
-
-
-create procedure FindTariffByNumber 
-	@Number int
-as
-begin
-	select * from TARIFFS where Tariff_Id = (select Tariff_Id from NUMBERS where Number = @Number)
-end;
-go
-
-
 USE CELL_PROVIDER
 go
 alter procedure FindUserNumbers
@@ -48,7 +20,6 @@ as
 		select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id
 	end;
 go
-exec FindUserNumbers 3
 
 --Call procedures
 

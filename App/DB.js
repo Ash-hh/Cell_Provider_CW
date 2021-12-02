@@ -100,48 +100,6 @@ class DB{
         });    
     }
 
-    FindNumberByNumber(number,number_receiver=undefined){ //FIXME: useless?
-        return sql.connect(config).then(pool=>{
-            let result = pool.request()
-            .input('number',sql.Int,number);
-
-            if(number_receiver){
-                result.input('number_rec',sql.Int,number_receiver)
-            }
-
-            return result.execute('FindNumberByNum')
-            .then(result=>{                
-                return result.recordset.length > 1 ?result.recordset:result.recordset.pop() ;
-            })
-        })
-    }
-
-    FindNumberByNumberSynch(number,callback){ //FIXME: useless?
-        sql.connect(config).then(pool=>{
-            let result = pool.request()
-            .input('number',sql.Int,number);
-
-            result.execute('FindNumberByNum')
-            .then(result=>{                
-                callback(result.recordset.length > 1 ?result.recordset:result.recordset.pop());
-            })
-        })
-    }
-
-
-
-    FindTariffByNum(number){ //FIXME: useless?
-        
-        return sql.connect(config).then(pool=>{
-            return pool.request()
-            .input('Number',sql.Int,number)
-            .execute('FindTariffByNumber')
-            .then(result=>{               
-                return result.recordset.pop(); 
-            })
-        })
-    }
-
     UpdateCall(id,sender,receiver,time){ //FIXME: useless?
         return sql.connect(config).then(pool=>{
             return pool.request()
