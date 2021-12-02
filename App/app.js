@@ -9,7 +9,7 @@ app.use(express.urlencoded({extended:true}));
 
 
 
-app.route('/register')
+app.route('/register') //TODO: hash
     .get((req,res)=>{
         res.sendFile(__dirname+'/resources/register.html');
     })
@@ -32,7 +32,7 @@ app.route('/register')
          
     });
 
-app.route('/login')
+app.route('/login') 
     .get((req,res)=>{
         res.clearCookie('User');
         res.sendFile(__dirname+'/resources/login.html');        
@@ -42,19 +42,20 @@ app.route('/login')
         if(req.body.login && req.body.password){
             DB.FindUserByLogin(req.body.login)
             .then(records=>{
-                if(records){                    
-                    if(records.Password === req.body.password){
-                        if(records.User_Type != 1){ 
-                            delete records.User_Type;
-                        } 
-                          
-                        delete records.Password;       
-                        res.cookie('User',records);
-                        console.log('ok');
-                        res.redirect('/');                       
+                if(records){  
+                    if(records.IsActive){                  
+                        if(records.Password === req.body.password){
+                            
+                            delete records.Password;       
+                            res.cookie('User',records);
+                            console.log('ok');
+                            res.redirect('/');                       
+                        } else {
+                            console.log('ne ok');
+                            res.redirect('/login');
+                        }
                     } else {
-                        console.log('ne ok');
-                        res.redirect('/login');
+                        res.redirect('/login')
                     }
                 } else {
                     res.redirect('/login'); 
@@ -103,7 +104,7 @@ app.get('/api/findbyid/:exec/:id',(req,res)=>{
 })
 
 
-app.post('/api/user',(req,res)=>{ //TODO: current task
+app.post('/api/user',(req,res)=>{ 
 
     if(req.body.hasOwnProperty('userObj')){
         if(req.body.userObj.hasOwnProperty('Ballance')){

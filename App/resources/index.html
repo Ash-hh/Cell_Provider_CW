@@ -5,11 +5,48 @@
             register
         </title>
         <style>
-            header{
-                border:1px solid black
+            #popup{
+                width:100%;
+                min-height:100%;
+                background-color: rgba(0,0,0,0.5);
+                overflow:hidden;
+                position:fixed;
+                top:0px;
+                visibility: hidden;
+             
             }
+            #popup #popup_content{
+                margin:40px auto 0px auto;
+                width:420px;
+                height: 90px;
+                padding:10px;
+                background-color: #c5c5c5;
+                border-radius:5px;
+                box-shadow: 0px 0px 10px #000;
+            }    
         </style>
         <script>
+
+            function PopUpHide(){
+                popup.style.visibility = "hidden";               
+            }
+        
+            function PopUpShow(id){
+                fetch(`http://localhost:5000/api/findbyid/FindTariff/${id}`)
+                .then(result=>{
+                    return result.json();
+                }).then(data=>{
+                    popup_content.innerHTML=`
+                        <p>${data.Description} ${data.Call_Cost_perm}</p>
+                        <input type="button" value="submit" onclick="numSubmit(${data.Tariff_Id})">
+                    `
+                })
+
+                
+
+                popup.style.visibility = "visible" 
+            }
+
             function onloadTariffs(){
 
                 let refconfig = 'http://localhost:5000';
@@ -25,7 +62,13 @@
                         <tr> 
                             <td>${element.Description}</td> 
                             <td>${element.Call_Cost_perm}</td> 
-                            <td> <a href="${refconfig}/subtariff?id=${element.Tariff_Id}">Get Tariff</a> </td>
+                            <td>    
+                                <button
+                                    id=${element.Tariff_Id}"
+                                    onclick="PopUpShow(this.id)">
+                                Get Tariff</button> 
+                                
+                            </td>
                         </tr>`;
                     });
                    
@@ -66,6 +109,19 @@
                 onloadTariffs();
                 GetUser();
             }
+
+            function numSubmit(id){
+           
+                fetch(`/subtariff?id=${id}`,{
+                    method:"POST"
+                }).then(result=>{
+                    return result.text();
+                }).then(data=>{
+                    alert(data);
+                })
+
+                PopUpHide();
+            }
         </script>
     </head>
     <body onload="load()">      
@@ -73,6 +129,11 @@
           
        </header>
        <div>
+            <div id="popup">
+                <div id="popup_content">
+                    
+                </div>
+            </div>
            <table id="Tariffs">
                <tr>
                    <td>Description</td>
