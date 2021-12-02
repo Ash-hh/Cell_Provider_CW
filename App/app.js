@@ -298,59 +298,29 @@ app.route('/call')
 
         if(req.body.submit === 'Start Call'){
 
-            DB.FindNumberByNumber(req.body.sender,req.body.receiver)
+            DB.StartCall(req.body.sender,req.body.receiver,(req.body.min*60)+req.body.second)
             .then(records=>{
-                if(records.length==2){
-                    DB.AddCall(
-                        req.body.sender == records[0].Number ? records[0].User_Id : records[1].User_Id,
-                        req.body.receiver == records[0].Number ? records[0].User_Id : records[1].User_Id, 
-                        (req.body.min*60)+req.body.second
-                    ).then(records=>{
-                    res.end(`${records.Call_Id}`);
-                    })
-                } else {
-                    res.end('at least one number does not exist')
-                }
+                console.log(records);
+                res.end(`${records}`);
             })
+
+
             
         } else if (req.body.submit === 'End Call' || req.body.submit==='End Call Emergency'){
 
             let User = req.cookies.User ? req.cookies.User : undefined;
 
-            DB.FindNumberByNumberSynch(req.body.sender,(records)=>{
-                
-                if(!User || User.User_Id != records.User_Id){
-                    DB.FindById('FindUser',records.User_Id) 
-                   .then(records=>{                      
-                       User = records;
-                   })
-                }
-                
-                DB.FindTariffByNum(req.body.sender)                
-                .then(recordss=>{
-                    let bill = recordss.Call_Cost_perm * ((req.body.min*60)+req.body.second);
-                    User.Ballance -= bill;   
-                    console.log(`Cookie: ${req.cookies.User.User_Id}| Current: ${User.User_Id}`)                
-                    DB.UpdateUser(User.User_Id,{Ballance:User.Ballance})
-
-                    if(req.cookies.User.User_Id == User.User_Id){
-                        res.cookie('User',User);
-                    }
-                    
-                    res.end(`call cost: ${bill} account ballance: ${User.Ballance}`)
-                })
-
+            DB.EndCall(
+                req.body.callId,
+                req.body.sender,
+                (req.body.min*60)+req.body.second
+            ).then(records=>{     
+                if(User){
+                    req.cookies.User.Ballance = records.Ballance;
+                    res.cookie('User',req.cookies.User)
+                }          
+                res.end(`call cost: ${records.Bill} account ballance: ${records.Ballance}`)
             })
-
-            DB.FindById('FindCall',req.body.callId)
-            .then(records=>{
-                DB.UpdateCall(
-                    req.body.callId,
-                    records.User_Sender_Id,
-                    records.User_Receiver_Id,
-                    (req.body.min*60)+req.body.second
-                )
-            });
 
         }
         

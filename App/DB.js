@@ -260,6 +260,34 @@ class DB{
         })
     }
 
+    StartCall(User_Sender_Id,User_Receiver_Id,Time){
+        return sql.connect(config).then(pool=>{
+            return pool.request()
+            .input('senderNumber',sql.Int,User_Sender_Id)
+            .input('receiverNumber',sql.Int,User_Receiver_Id)
+            .input('time',sql.Int,Time)
+            .execute('CallStart')
+            .then(result=>{   
+                console.log(result);
+                return result.returnValue; 
+            })
+        })
+    }
+
+    EndCall(Call_Id,SenderNumber,Time){
+        return sql.connect(config).then(pool=>{
+            return pool.request()
+            .input('callId',sql.Int,Call_Id)
+            .input('senderNumber',sql.Int,SenderNumber)
+            .input('timeEnd',sql.Int,Time)
+            .execute('CallEnd')
+            .then(result=>{                   
+                return result.recordset.pop(); 
+            })
+        })
+    }
+
+
     //Xml Functions
     XMLFunc(exec,callback){
         sql.connect(config).then(pool=>{

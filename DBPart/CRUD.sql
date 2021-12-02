@@ -252,17 +252,17 @@ end;
 
 --UpdateCall
 go
-create procedure CallUpdate
+alter procedure CallUpdate
 	@Id int,
-	@User_Sender_Id int,
-	@User_Receiever_Id int,
-	@Call_Time int
+	@User_Sender_Id int =NULL,
+	@User_Receiever_Id int =NULL,
+	@Call_Time int=NULL
 as
 begin
 	update CALLS
-	set User_Sender_Id = @User_Sender_Id,
-		User_Receiver_Id = @User_Receiever_Id,
-		Call_Time = @Call_Time
+	set User_Sender_Id = IsNull(@User_Sender_Id,User_Sender_Id),
+		User_Receiver_Id = IsNull(@User_Receiever_Id,User_Receiver_Id),
+		Call_Time = IsNull(@Call_Time,Call_Time)
 	where Call_Id = @Id;
 end;
 

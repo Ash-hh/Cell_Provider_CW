@@ -50,7 +50,56 @@ as
 go
 exec FindUserNumbers 3
 
+--Call procedures
 
+go
+alter procedure CallStart
+	@senderNumber int,
+	@receiverNumber int,
+	@time int
+as
+begin
+	declare @sender int = dbo.FindUser_IdByNumber(@senderNumber);
+	declare @receiver int =  dbo.FindUser_IdByNumber(@receiverNumber)
+
+	declare @call_id int
+	exec @call_id = CallAdd @sender,@receiver,@time;
+
+	return @call_id
+end;
+
+go
+create Function FindUser_IdByNumber(
+	@Id int
+) returns int
+as
+begin
+return(
+	select User_id from NUMBERS where Number = @Id
+)
+end
+
+go
+alter procedure CallEnd
+	@callId int,
+	@senderNumber int,
+	@timeEnd int
+as
+begin
+	declare @bill int = (
+		select Call_Cost_perm from TARIFFS as TAF 
+		JOIN NUMBERS as NUM 
+		on TAF.Tariff_Id = NUM.Tariff_Id 
+		where NUM.Number = @senderNumber) * @timeEnd
+    
+	declare @User_Id int = (select User_Id from NUMBERS where Number = @senderNumber)	
+	declare @User_Ballance int = (select Ballance from USERS where User_Id = @User_Id)
+	set @User_Ballance = @User_Ballance - @bill;
+	exec UserUpdate @User_Id,@Ballance= @User_Ballance;
+	exec CallUpdate @Id = @callid, @Call_Time = @timeEnd;
+
+	select @bill as Bill,Ballance from USERS where User_Id = @User_Id;
+end;
 
 
 
