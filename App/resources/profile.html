@@ -20,7 +20,26 @@
              border-radius:5px;
              box-shadow: 0px 0px 10px #000;
          }       
+
+         #UserProfile { 
+            float: left;
+            border-right: 1px solid #C1C1C1;
+            overflow: auto;
+            height: 99%;
+
+        }
+
+        #CallHistory {
+            
+            float: left;
+            border-left: 1px solid #C1C1C1;
+            overflow: auto;
+            height: 99%;
+        }
+
+      
     </style>
+    <script src='http://localhost:5000/api/scripts/TableFunctions.js'></script>
     <script>
         let globalValue;
 
@@ -128,6 +147,7 @@
             }
         }
         
+        //TODO: call history
         function AuthorizedUserInfo(data){
             ProfileInfo.innerHTML += `
                 <p><span id='BallanceValue'>Ballance: ${data.User.Ballance}</span>
@@ -147,50 +167,14 @@
 
             if(data.hasOwnProperty('Numbers')){
 
-                let NumsTable = document.createElement("table");
+                NumbersInfo.append(Renders('ProfileNumbers',data.Numbers))
+           
+            }
 
-                let tableHeader = NumsTable.insertRow();
-                tableHeader.insertCell().innerHTML='Number'
-                tableHeader.insertCell().innerHTML='Tariff'
-                tableHeader.insertCell().innerHTML='Call Cost'
-                tableHeader.insertCell().innerHTML='Date open'
-
-                   
-
-                if(data.Numbers.length >1){
-                    data.Numbers.forEach(element => {
-                        let row = NumsTable.insertRow();
-
-                        row.insertCell().append(element.Number)
-                        row.insertCell().append(element.Description)
-                        row.insertCell().append(element.Call_Cost_perm)
-                        row.insertCell().append(element.Date_Open)
-
-                        row.insertCell().innerHTML =`
-                            <button
-                                id="${element.Number_Id}"
-                                name="DeleteNumber"
-                                onclick="profileController({id:this.id,name:'NumberDelete'})">
-                            Delete Number</button>
-                        `
-                    })  
-                } else {
-                    let row = NumsTable.insertRow();
-
-                    row.insertCell().append(data.Numbers.Number)
-                    row.insertCell().append(data.Numbers.Description)
-                    row.insertCell().append(data.Numbers.Call_Cost_perm)
-                    row.insertCell().append(data.Numbers.Date_Open)
-                    row.insertCell().innerHTML =`
-                        <button
-                            id="${data.Numbers.Number_Id}"
-                            name="DeleteNumber"
-                            onclick="profileController({id:this.id,name:'NumberDelete'})">
-                        Delete Number</button>
-                    `
-                }
-            
-                NumbersInfo.append(NumsTable)
+            if(data.hasOwnProperty('Calls')){
+                
+                CallHistory.append(Renders('ProfileCalls', data.Calls))
+               
             }
         }
 
@@ -230,12 +214,19 @@
                 <button id="BallanceUpdateButton" >Top Up</button>
             </div>
         </div>
-
-        <div id='ProfileInfo'>
-
+        <div class="container">
+            <div id='UserInfo'>
+                <div id='ProfileInfo'>
+    
+                </div>
+                <div id='NumbersInfo'>
+                    
+                </div>
+            </div>
+            <div id='CallHistory'>
+               
+            </div>
         </div>
-        <div id='NumbersInfo'>
-            
-        </div>
+       
     </body>
 </html>

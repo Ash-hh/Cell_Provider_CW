@@ -21,6 +21,16 @@ as
 	end;
 go
 
+create procedure FindUserCalls
+(
+	@Id int
+)
+as
+	begin
+		select * from CALLS where User_Sender_Id = @Id;
+	end;
+go
+
 --Call procedures
 
 exec CallStart 0,1,3

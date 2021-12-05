@@ -24,6 +24,7 @@
         </style>
     </head>
     <body>
+        <script src="http://localhost:5000/api/scripts/TableFunctions.js"></script>
         <script>
                 
             let arr=[];     
@@ -37,17 +38,13 @@
                     }).then(data=>{
 
                         arr = data;
-
-                        switch(Button_Value){
-                            case 'AllUsers' : UsersInterface(arr); break;
-                            case 'AllTariffs' : TariffInterface(arr); break;
-                            case 'AllNumbers' : NumberInterface(arr); break;
-                            case 'AllCalls' : CallInterface(arr); break;
-                        }
+                        ff = arr[0];
+                        resultDiv.innerHTML = '';
+                        resultDiv.append(Renders(Button_Value,arr))
                         
                     })
                 } else {
-                    console.log(Button_Value)
+                    
                     awaitPopUp.style.visibility = 'visible';
 
                     fetch(`http://localhost:5000/api/admin/${Button_Value}/0`)
@@ -63,13 +60,13 @@
 
             function ControllerFunc(id,name,value,Tariff=undefined){
 
-               
+               console.log(value)
 
-                value = JSON.parse(value)
+               // value = JSON.parse(value)
                 
                 let searchelem = arr.find(user => user[name] == id);
                 
-                let elemId =  arr.indexOf(searchelem); //TODO:refactor
+                let elemId =  arr.indexOf(searchelem); 
 
                 if(value.exec.indexOf('Delete')==-1){
                     if(!Tariff && value.exec.indexOf('Update')!=-1){
@@ -103,178 +100,34 @@
                     if(result.ok)
                         return result.text();
                 }).then(data=>{
-                    if(value.exec.indexOf('Tariff')!=-1 && value.exec == 'AddTariff') 
+
+                    console.log(value.exec)
+
+                    if(value.exec.indexOf('Tariff')!=-1) 
                     {   
-                        send('AllTariffs')
-                    } else {    
-                        TariffInterface(arr)
-                    }                
-                    if(value.exec.indexOf('Number')!=-1) {NumberInterface(arr)}
-                    if(value.exec.indexOf('User')!=-1) {UsersInterface(arr)}
-                    if(value.exec.indexOf('Call')!=-1) {CallInterface(arr)}
+                        if(value.exec == 'AddTariff'){
+                            send('AllTariffs')
+                        } else {    
+                        resultDiv.append(Renders('AllTariffs',arr))
+                        }
+                    }          
+
+                    console.log(value.exec)
+
+                    resultDiv.innerHTML = '';
+
+                    if(value.exec.indexOf('Number')!=-1) {
+                        resultDiv.append(Renders('AllNumbers',arr))
+                    }
+                    if(value.exec.indexOf('User')!=-1) {
+                        resultDiv.append(Renders('AllUsers',arr))
+                    }
+                    if(value.exec.indexOf('Call')!=-1) {
+                        resultDiv.append(Renders('AllCalls',arr))
+                    }
 
                 })
 
-            }
-            
-            function UsersInterface(usersArr){
-
-                let UserTable = document.createElement("table")
-                
-                let tableHeader = UserTable.insertRow();
-
-                tableHeader.insertCell().innerHTML = 'Id'
-                tableHeader.insertCell().innerHTML = 'Login'
-                tableHeader.insertCell().innerHTML = 'Name'
-                tableHeader.insertCell().innerHTML = 'Surname'
-                tableHeader.insertCell().innerHTML = 'Second Name'
-                tableHeader.insertCell().innerHTML = 'Type'
-                tableHeader.insertCell().innerHTML = 'Ballance'
-                tableHeader.insertCell().innerHTML = 'Status'
-
-                usersArr.forEach(element => {
-                    let row = UserTable.insertRow()
-                        row.insertCell().append(element.User_Id)
-                        row.insertCell().append(element.Login)
-                        row.insertCell().append(element.User_Name)
-                        row.insertCell().append(element.User_Surname)
-                        row.insertCell().append(element.User_MidName)
-                        row.insertCell().append(element.User_Type == 1 ? 'Admin' : 'User')
-                        row.insertCell().append(element.Ballance)
-                        row.insertCell().append(element.IsActive ? 'Active' : 'Not Active')
-                        
-                        let userController = row.insertCell().innerHTML = ` 
-                        <button 
-                            id="${element.User_Id}" 
-                            name="User_Id" 
-                            value='{"exec":"UpdateUser","property":"IsActive"}' 
-                            onclick="ControllerFunc(this.id, this.name, this.value)">
-                        ${element.IsActive ? 'Disactivate' : 'Activate' } </button>
-                       
-                        <button 
-                            id="${element.User_Id}" 
-                            name="User_Id" 
-                            value='{"exec":"UpdateUser","property":"User_Type"}' 
-                            onclick="ControllerFunc(this.id,this.name, this.value)">
-                        ${element.User_Type == 1 ? 'Revoke Admin':'Grant Admin'} </button>    
-                       
-                        <button 
-                            id="${element.User_Id}" 
-                            name="DeleteUser" 
-                            value='{"exec":"DeleteUser"}' 
-                            onclick="ControllerFunc(this.id,this.name, this.value)">
-                        Delete User </button>`;
-                });
-                resultDiv.innerHTML='';
-                resultDiv.append(UserTable);
-            } 
-
-            function TariffInterface(tariffArr){
-                let TariffTable = document.createElement("table")
-                
-                let tableHeader = TariffTable.insertRow();
-
-                tableHeader.insertCell().innerHTML = 'Id'
-                tableHeader.insertCell().innerHTML = 'Description'
-                tableHeader.insertCell().innerHTML = 'Call Cost Per Min'
-
-                tariffArr.forEach(element => {
-                    let row = TariffTable.insertRow()
-                        row.insertCell().append(element.Tariff_Id)
-                        row.insertCell().append(element.Description)
-                        row.insertCell().append(element.Call_Cost_perm)
-                        
-                        let tariffController = row.insertCell().innerHTML = ` 
-                        <button 
-                            id="${element.Tariff_Id}" 
-                            name="TariffDelete" 
-                            value='{"exec":"DeleteTariff"}' 
-                            onclick="ControllerFunc(this.id, this.name, this.value)">
-                        Delete </button>    
-
-                        <button 
-                            id="${element.Tariff_Id}" 
-                            name="Tariff_Id" 
-                            onclick="PopUpShow('Edit',this.id,this.name)">
-                        Edit </button>    `;
-                });
-
-                resultDiv.innerHTML='';
-                resultDiv.append(TariffTable);
-            }
-
-            function NumberInterface(numberArr){
-                let NumberTable = document.createElement("table")
-                
-                let tableHeader = NumberTable.insertRow();
-
-                tableHeader.insertCell().innerHTML = 'Id'
-                tableHeader.insertCell().innerHTML = 'Number'
-                tableHeader.insertCell().innerHTML = 'User Id'
-                tableHeader.insertCell().innerHTML = 'Tariff Id'
-                tableHeader.insertCell().innerHTML = 'Open Date'
-              
-
-                numberArr.forEach(element => {
-                    let row = NumberTable.insertRow()
-                        row.insertCell().append(element.Number_Id)
-                        row.insertCell().append(element.Number)
-                        row.insertCell().append(element.User_Id)
-                        row.insertCell().append(element.Tariff_Id)
-                        row.insertCell().append(element.Date_Open)
-                             
-                        
-                        let numberController = row.insertCell().innerHTML = ` 
-                       
-                       
-                        <button 
-                            id="${element.Number_Id}" 
-                            name="Number_Id" 
-                            value='{"exec":"DeleteNumber"}' 
-                            onclick="ControllerFunc(this.id,this.name, this.value)">
-                        Delete </button>`
-                });
-
-                resultDiv.innerHTML='';
-                resultDiv.append(NumberTable);
-            }
-
-            function CallInterface(callArr){
-
-                let CallTable = document.createElement("table")
-                
-                let tableHeader = CallTable.insertRow();
-
-                tableHeader.insertCell().innerHTML = 'Id'
-                tableHeader.insertCell().innerHTML = 'Sender Id'
-                tableHeader.insertCell().innerHTML = 'Sender Number'
-                tableHeader.insertCell().innerHTML = 'Receiver Id'
-                tableHeader.insertCell().innerHTML = 'Receiver Number'
-                tableHeader.insertCell().innerHTML = 'Time (sec)'
-                tableHeader.insertCell().innerHTML = 'Cost'
-               
-
-                callArr.forEach(element => {
-                    let row = CallTable.insertRow()
-                        row.insertCell().append(element.Call_Id)
-                        row.insertCell().append(element.User_Sender_Id)
-                        row.insertCell().append(element.User_Sender_Number)
-                        row.insertCell().append(element.User_Receiver_Id)
-                        row.insertCell().append(element.User_Receiver_Number)
-                        row.insertCell().append(element.Call_Time)
-                        row.insertCell().append(element.Call_Cost)
-                        
-                        let callController = row.insertCell().innerHTML = ` 
-                        <button 
-                            id="${element.Call_Id}" 
-                            name="Call_Id" 
-                            value='{"exec":"DeleteCall"}' 
-                            onclick="ControllerFunc(this.id, this.name, this.value)">
-                        Delete </button>`
-                });
-
-                resultDiv.innerHTML='';
-                resultDiv.append(CallTable);
             }
 
             function PopUpHide(){
@@ -325,7 +178,7 @@
                     Description : form.Description.value,
                     Call_Cost_perm : form.Call_Cost.value
                 }
-                ControllerFunc(id,"Tariff_Id",'{"exec":"UpdateTariff"}',Tariff)
+                ControllerFunc(id,"Tariff_Id",{exec:"UpdateTariff"},Tariff)
 
                 PopUpHide();
             }
@@ -338,11 +191,11 @@
                     Call_Cost_perm : form.Call_Cost.value
                 }
                
-                ControllerFunc(undefined,"Tariff_Id",'{"exec":"AddTariff"}',Tariff) //TODO: refactor
+                ControllerFunc(undefined,"Tariff_Id",{"exec":"AddTariff"},Tariff) 
                 PopUpHide();
                 
             }
-
+          
         </script>
 
         <div id="awaitPopUp">

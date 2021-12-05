@@ -48,7 +48,7 @@ class DB{
         })
     }
 
-    AddCall(Sender,Receiver,Time){ //FIXME: useless
+    AddCall(Sender,Receiver,Time){ 
 
         return sql.connect(config).then(pool=>{
             return pool.request()
@@ -99,7 +99,7 @@ class DB{
         });    
     }
 
-    UpdateCall(id,sender,receiver,time){ //FIXME: useless?
+    UpdateCall(id,sender,receiver,time){
         return sql.connect(config).then(pool=>{
             return pool.request()
             .input('Id',sql.Int,id)

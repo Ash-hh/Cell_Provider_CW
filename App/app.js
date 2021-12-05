@@ -159,11 +159,24 @@ app.route('/profile/:login')
             
             DB.FindById('FindUserNumbers',req.cookies.User.User_Id)
             .then((records)=>{
-                res.json({
-                    IsLogin:true,
-                    User:req.cookies.User,
-                    Numbers:records
-                });
+                DB.FindById('FindUserCalls',req.cookies.User.User_Id)
+                .then(CallRecords=>{
+                    CallRecords ?
+                    res.json({
+                        IsLogin:true,
+                        User:req.cookies.User,
+                        Numbers:records,
+                        Calls:CallRecords
+                    }) : 
+
+                    res.json({
+                        IsLogin:true,
+                        User:req.cookies.User,
+                        Numbers:records
+                    });
+
+                })
+               
             })
 
         } else {
@@ -325,8 +338,15 @@ app.route('/call')
         
     })
 
+app.get('/api/scripts/:filename',(req,res)=>{
+    console.log(req.params.filename)
+    res.sendFile(__dirname+'/resources/js/'+req.params.filename)
+})
+
 app.listen(5000);
 
 DB.SetFreeNumbers();
+
+//TODO: change bill calc system
 
     
