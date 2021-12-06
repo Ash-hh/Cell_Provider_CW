@@ -8,13 +8,13 @@ go
 
 
 --Add User
-create procedure UserAdd
+ alter procedure UserAdd
 	@Username nvarchar(50),
 	@Surname nvarchar(50),
 	@MidName nvarchar(50),
 	@DateOfBirth date,
 	@login nvarchar(50),
-	@password nvarchar(50),
+	@password nvarchar(250),
 	@UserType int,
 	@Ballance money,
 	@Activity bit
@@ -27,14 +27,14 @@ end;
 
 --Update User
 go
-create procedure UserUpdate
+alter procedure UserUpdate
 	@Id int,
 	@Username nvarchar(50) = NULL,
 	@Surname nvarchar(50) = NULL,
 	@MidName nvarchar(50) = NULL,
 	@DateOfBirth date = NULL,
 	@login nvarchar(50) = NULL,
-	@password nvarchar(50) = NULL,
+	@password nvarchar(250) = NULL,
 	@UserType int = NULL,
 	@Ballance money = NULL,
 	@Activity bit = NULL

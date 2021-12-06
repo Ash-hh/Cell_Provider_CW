@@ -3,6 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser')
 const app = express();
 const DB = new Db();
+const bcrypt = require('bcrypt')
 app.use(cookieParser('key'));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -17,14 +18,18 @@ app.route('/register') //TODO: hash
         DB.FindUserByLogin(req.body.username)
         .then(records=>{
             if(!records){
+               
+                let hash = bcrypt.hashSync(req.body.password.trim(), 5);
+                console.log(hash)
                 DB.AddUser(req.body.username,
                     req.body.surname,
                     req.body.midname,
                     req.body.dateOfBirth,
                     req.body.login,
-                    req.body.password,
+                    hash,
                     2,0,1);
-                res.redirect('/login');  
+                res.redirect('/login'); 
+                
             } else {
                 res.redirect('/register');
             }
@@ -43,8 +48,9 @@ app.route('/login')
             DB.FindUserByLogin(req.body.login)
             .then(records=>{
                 if(records){  
-                    if(records.IsActive){                  
-                        if(records.Password === req.body.password){
+                    if(records.IsActive){    
+                           
+                        if(bcrypt.compareSync(req.body.password,records.Password)){
                             
                             delete records.Password;       
                             res.cookie('User',records);
@@ -258,10 +264,9 @@ app.route('/api/admin/:exec/:id')
         res.end();
     })
     .get((req,res)=>{ 
-      
 
         if(req.params.exec.indexOf('Xml')==-1){
-            DB[req.params.exec]()
+            DB.DbMonitoring(req.params.exec)
             .then(records=>{            
                 res.json(records);
             })
@@ -308,7 +313,7 @@ app.route('/call')
     .post((req,res)=>{
 
         if(req.body.submit === 'Start Call'){
-
+            console.log(req.body);
             DB.StartCall(req.body.sender,req.body.receiver,(req.body.min*60)+req.body.second)
             .then(records=>{
                
@@ -348,5 +353,5 @@ app.listen(5000);
 DB.SetFreeNumbers();
 
 //TODO: change bill calc system
-
+//TODO: 100 000 строк, поэтапный вывод, обновить SetFreeNums
     

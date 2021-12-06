@@ -1,5 +1,5 @@
 go
-create database CELL_PROVIDER;
+--create database CELL_PROVIDER;
 
 go
 use CELL_PROVIDER;
@@ -12,6 +12,7 @@ create table USER_TYPE
 
 go
 
+
 create table USERS
 (
 	User_Id int identity(1,1) constraint USER_PK primary key,
@@ -20,7 +21,7 @@ create table USERS
 	User_MidName nvarchar(50),
 	Date_Birth date,
 	Login nvarchar(50) unique,
-	Password nvarchar(50),
+	Password nvarchar(250),
 	User_Type int constraint USER_TYPE_FK foreign key references USER_TYPE(Id),
 	Ballance money,
 	IsActive bit
