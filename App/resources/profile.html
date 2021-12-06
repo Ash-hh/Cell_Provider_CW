@@ -136,7 +136,7 @@
             ProfileInfo.innerHTML = `
                 <div>
                     <h3>Profile Information </h3>
-                    <p>${data.User.User_Type = 1 ? 'Admin' : 'User'} login: ${data.User.Login} </p>
+                    <p>${data.User.User_Type == 1 ? 'Admin' : 'User'} login: ${data.User.Login} </p>
                     <p>Name: ${data.User.User_Name} ${data.User.User_Surname} ${data.User.User_MidName}</p>
                     <p>Status: ${data.User.IsActive ? 'Active' : 'Not Active'} </p>
                 </div> 

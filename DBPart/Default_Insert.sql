@@ -8,24 +8,31 @@ values
 ('Tarif nu prosta bomba',2),
 ('Pushka a ne tarif',3);
 
-
-select * from USERS;
-
-insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open,IsActive,Ballance)
-values 
-(8021,1,1,'2000-01-01',1,100),
-(8022,1,1,'2000-02-02',1,100),
-(8023,2,1,'2000-02-02',1,100);
-
-insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open,IsActive,Ballance)
-values 
-(8024,2,2,'2000-01-01',1,100)
-
-delete from NUMBERS where Number = 8024
-
 select * from NUMBERS
 select * from CALLS
 
+declare @number int, @iter int, @Id int, @TafId int, @date date;
+set @iter = 1;
+set @number = 100000;
+set @Id = 1;
+set @TafId = 1;
+set @date = '2021-02-02';
+while @iter < 500
+	begin
+		if(@Id = 10)
+			set @Id = 1;
+		if(@TafId = 6)
+			set @TafId = 1;
+
+		insert into NUMBERS(Number,User_Id,Tariff_Id,Date_Open)
+		values (@number,@Id,@TafId,@date)
+		set @number = @number +1;
+		set @iter = @iter +1;
+		set @Id = @Id +1;
+		set @TafId = @TafId+1;
+	end;
+
+	
 
 
 

@@ -21,14 +21,33 @@
                 border-radius:5px;
                 box-shadow: 0px 0px 10px #000;
             }       
+
+            header{
+                margin-bottom: 10px;
+            }
         </style>
     </head>
-    <body>
+    <body onload='DBInfo()'>
         <script src="http://localhost:5000/api/scripts/TableFunctions.js"></script>
         <script>
                 
             let arr=[];     
                 
+            function DBInfo(){
+                fetch(`http://localhost:5000/api/admin/DBObjCount/0`)
+                .then(result =>{
+                    
+                    return result.json()
+                }).then(data=>{                    
+                    data = data.pop();
+                   
+                    header.innerHTML +=`
+                        Total objects in Database: ${data.Obj_Count}   Tables:${data.Table_Count}   Procedures:${data.Procedures_Count}
+                        <br>
+                    `
+                })
+            }
+
             function send(Button_Value){
 
                 if(Button_Value.indexOf('Xml')==-1){
@@ -100,21 +119,16 @@
                     if(result.ok)
                         return result.text();
                 }).then(data=>{
-
-                    console.log(value.exec)
-
+                    resultDiv.innerHTML = '';
+                   
                     if(value.exec.indexOf('Tariff')!=-1) 
                     {   
                         if(value.exec == 'AddTariff'){
                             send('AllTariffs')
                         } else {    
-                        resultDiv.append(Renders('AllTariffs',arr))
+                            resultDiv.append(Renders('AllTariffs',arr))
                         }
-                    }          
-
-                    console.log(value.exec)
-
-                    resultDiv.innerHTML = '';
+                    }   
 
                     if(value.exec.indexOf('Number')!=-1) {
                         resultDiv.append(Renders('AllNumbers',arr))
@@ -197,7 +211,10 @@
             }
           
         </script>
-
+        <header id='header'>
+            <a href="http://localhost:5000/">Main Page</a>
+            <a href="http://localhost:5000/Admin/monitor">DB Monitoring</a>
+        </header>
         <div id="awaitPopUp">
             <h1>This operation may take a few minutes...</h1>
         </div>
@@ -214,6 +231,7 @@
             <input type='button' name="AddTariff"value="AddTariff" onclick="PopUpShow('Delete')">            
             <input type='button' name="ExportAllToXml"value="ExportAllToXml" onclick="send(this.name)">              
             <input type='button' name="ImportFromXml"value="ImportFromXml" onclick="send(this.name)">
+           
                 
             </select>
         </div>

@@ -1,13 +1,17 @@
 use CELL_PROVIDER
 ----------------------------
 go
-create procedure FindUserByLogin
+alter procedure FindUserByLogin
 	@login nvarchar(50)
 as
 begin
 	select * from USERS where Login = @login;
 end;
 ----------------------------
+
+
+
+exec FindUserByLogin Admin
 
 USE CELL_PROVIDER
 go
@@ -44,12 +48,20 @@ as
 begin
 	declare @sender int = dbo.FindUser_IdByNumber(@senderNumber);
 	declare @receiver int =  dbo.FindUser_IdByNumber(@receiverNumber)
-
+	print(@sender)
+	print(@receiver)
 	declare @call_id int
-	exec @call_id = CallAdd @sender,@senderNumber,@receiver,@receiverNumber,@time,0;
+	exec @call_id = CallAdd 
+						@User_Sender_Id = @sender,
+						@User_Sender_Number=@senderNumber,
+						@User_Receiever_Id=@receiver,
+						@User_Receiver_Number=@receiverNumber,
+						@Call_Time=@time,@Call_Cost=0;
 
 	return @call_id
 end;
+
+	exec CallStart 100001, 190000, 0 
 
 go
 create Function FindUser_IdByNumber(
@@ -75,7 +87,7 @@ begin
 		on TAF.Tariff_Id = NUM.Tariff_Id 
 		where NUM.Number = @senderNumber) * @timeEnd
     
-	declare @User_Id int = (select User_Id from NUMBERS where Number = @senderNumber)	
+	declare @User_Id int = (select User_Sender_Id from CALLS where Call_Id = @callId)	
 	declare @User_Ballance int = (select Ballance from USERS where User_Id = @User_Id)
 	set @User_Ballance = @User_Ballance - @bill;
 	exec UserUpdate @User_Id,@Ballance= @User_Ballance;
@@ -84,6 +96,7 @@ begin
 	select @bill as Bill,Ballance from USERS where User_Id = @User_Id;
 end;
 
+exec CallEnd 47,100001,23
 
 
 --Solve Problems of NUMBERS table
@@ -142,6 +155,11 @@ select Number from NUMBERS order by Number
 open cursor_freeNums
 	FETCH NEXT from cursor_freeNums into @numa	
 	FETCH NEXT from cursor_freeNums into @numb	
+
+	if(@numa !=100000)
+		set @numa = 100000
+
+
 	while @@FETCH_STATUS = 0
 	begin
 
@@ -162,4 +180,10 @@ open cursor_freeNums
 close cursor_freeNums
 deallocate cursor_freeNums
 go
+use CELL_PROVIDER
+exec SetFreeNums
+exec GetNumber
+
+
+
 

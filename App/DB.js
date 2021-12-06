@@ -3,8 +3,23 @@ let sql = require('mssql/msnodesqlv8');
 let ConnectionPool;
 const config = {
     "driver":"msnodesqlv8",
-    "connectionString":"Driver={SQL Server Native Client 11.0};Server={DESKTOP-23913PP};Database={CELL_PROVIDER};Trusted_Connection={yes};"
+    "connectionString":"Driver={SQL Server Native Client 11.0};Server={DESKTOP-23913PP};Database={CELL_PROVIDER};Trusted_Connection={yes};",
 };
+
+const sqlConfig = {
+    //user: process.env.DB_USER,
+   // password: process.env.DB_PWD,
+    database: 'CELL_PROVIDER',
+    server: 'DESKTOP-23913PP',
+    pool: {
+      max: 100000000,
+      min: 0,
+      idleTimeoutMillis: 3000000
+    },
+    options: {
+      trustServerCertificate: true 
+    }
+  }
 
 class DB{
     constructor()
@@ -65,7 +80,7 @@ class DB{
     }
 
     AddTariff(Tariff){
-        console.log(Tariff)
+       
         sql.connect(config).then(pool=>{
             pool.request()
             .input('Description',sql.NText,Tariff.Description)
@@ -82,7 +97,7 @@ class DB{
              .input('Id',sql.Int,id)
              .execute(`${exec}`)
              .then(result=>{
-                 console.log(result)
+               
                 return result.recordset.length <= 1 ? result.recordset.pop() : result.recordset;
              });            
          });    
@@ -225,7 +240,9 @@ class DB{
             .input('time',sql.Int,Time)
             .execute('CallStart')
             .then(result=>{   
+                console.log('-------------');
                 console.log(result);
+                console.log('-------------');
                 return result.returnValue; 
             })
         })
@@ -238,7 +255,8 @@ class DB{
             .input('senderNumber',sql.Int,SenderNumber)
             .input('timeEnd',sql.Int,Time)
             .execute('CallEnd')
-            .then(result=>{                   
+            .then(result=>{    
+                console.log(result);               
                 return result.recordset.pop(); 
             })
         })
@@ -246,42 +264,39 @@ class DB{
 
 
     //Xml Functions
-    XMLFunc(exec,callback){
-        sql.connect(config).then(pool=>{
+    XMLFunc(exec,callback){  //FIXME: ????? 
+        sql.connect(sqlConfig).then(pool=>{
             pool.request()
             .execute(exec)
             .then(result=>{   
                 console.log(result);          
                 callback(result.returnValue);
+            }).catch(err=>{
+                console.log(err.message)
+                console.log(err)
+                callback(-2)
             })
         }).catch(err=>{
+            console.log(err)
             console.log(err.message)
             callback(-2)
         })
-
-        
     }
 
     //Monitoring Functions
-
-    GetLastExecs(){
+    
+    DbMonitoring(exec){
         return sql.connect(config).then(pool=>{
             return pool.request()
-            .execute("LastExecs")
-            .then(result=>{
-                return result.recordset;
+            .execute(exec)
+            .then(records=>{
+                return records.recordset;
             })
-        })
-    }
-
-    GetExecsCount(){
-        return sql.connect(config).then(pool=>{
-            return pool.request()
-            .execute("ProcExecsCount")
-            .then(result=>{
-                return result.recordset;
-            })
-        })
+            .catch(err=>{
+                console.log(err);})
+        }).catch(err=>{
+            console.log(err);
+        }) 
     }
 
 

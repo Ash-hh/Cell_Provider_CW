@@ -141,7 +141,7 @@ function TableRender(HeaderArray,PropertyArray,Data,Controller){
 
 function Renders(TableName,arr){
 
-    console.log(TableName+' On Render');
+    console.log(TableName)
 
     switch(TableName){
         case 'AllUsers' : 
@@ -264,8 +264,58 @@ function Renders(TableName,arr){
             )
         break;
 
-        case 'TariffsMain':
-                
+        case 'LastExecs':
+            return TableRender(
+                ['Procedure Name','Last Execution'],
+                ['name','last_execution_time'],
+                arr
+            )
+        break;
+
+        case 'ProcExecsCount':
+            return TableRender(
+                ['Procedure Name','Execution Count'],
+                ['name','total_execution_count'],
+                arr
+            )
+        break;
+
+        case 'LongestAVGexecTime':
+                console.log(arr)
+                let input = [];
+
+                input.push(["name", "text", { role: "style" } ])
+
+                arr.forEach(element => {
+                    input.push([element.name, element.sumAvg/1000,`${element.sumAvg/1000 > 1000 ? 'red':'blue'}`])
+                });
+
+
+
+                google.charts.load("current", {packages:["corechart"]});
+                google.charts.setOnLoadCallback(drawChart);
+                function drawChart() {
+                var data = google.visualization.arrayToDataTable(input);
+
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0, 1,
+                                { calc: "stringify",
+                                    sourceColumn: 1,
+                                    type: "string",
+                                    role: "annotation" },
+                                2]);
+
+                var options = {
+                    title: "Average procedure executions time",
+                    width: 700,
+                    height: 500,
+                    bar: {groupWidth: "95%"},
+                    legend: { position: "none" },
+                };
+                var chart = new google.visualization.BarChart(document.getElementById("AverageExecTime"));
+                chart.draw(view, options);
+            }
+           
         break;
     }
 }

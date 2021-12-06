@@ -17,8 +17,8 @@ begin
 	declare @sqlCmd varchar(1000)
 	
 	set @fileName = N'F:\3_course\DB\Course_Project\XML\'+@Table+'.xml';
-	set @sqlStr = 'USE CELL_PROVIDER; SELECT * from '+@Table +' FOR XML PATH('''+@Table+'''), ROOT('''+@Table+'_ROOT'') '
-	set @sqlCmd = 'bcp.exe "' + @sqlStr + '" queryout ' + @fileName + ' -w -T'
+	set @sqlStr = 'USE CELL_PROVIDER; SELECT * from '+@Table +' FOR XML PATH('''+@Table+'''), ROOT('''+@Table+'_ROOT'')'
+	set @sqlCmd = 'bcp.exe "' + @sqlStr + '" queryout ' + @fileName + ' -w -T -r'
 	--print (@fileName);
 	--print (@sqlStr)
 	declare @result int;
@@ -86,7 +86,7 @@ Begin TRY
 		MY_XML.USERS.query('User_Surname').value('.', 'NVARCHAR(50)'),
 		MY_XML.USERS.query('User_Type').value('.', 'INT'),
 		MY_XML.USERS.query('Login').value('.', 'NVARCHAR(50)'),
-		MY_XML.USERS.query('Password').value('.', 'NVARCHAR(50)'),
+		MY_XML.USERS.query('Password').value('.', 'NVARCHAR(250)'),
 		MY_XML.USERS.query('Date_Birth').value('.', 'DATE'),
 		MY_XML.USERS.query('IsActive').value('.', 'BIT'),
 		MY_XML.USERS.query('Ballance').value('.', 'MONEY')
@@ -139,11 +139,12 @@ Begin TRY
 End TRY
 BEGIN catch
 	
-	return -1;
+	return ERROR_PROCEDURE();
 END catch
 go
 exec ExportAllToXML
-exec ImportFromXml
+
+declare @result int; exec @result = ImportFromXml; print(@result)
 
 
 
@@ -170,3 +171,24 @@ select * from USERS
 select * from TARIFFS
 select * from NUMBERS
 
+exec ExportToXML 'NUMBERS'
+
+
+
+set IDENTITY_INSERT NUMBERS ON
+	INSERT INTO NUMBERS(Number_Id,Number,User_Id,Tariff_Id,Date_Open)
+	SELECT
+	   MY_XML.NUMBERS.query('Number_Id').value('.', 'INT'),
+	   MY_XML.NUMBERS.query('Number').value('.', 'INT'),
+	   MY_XML.NUMBERS.query('User_Id').value('.', 'INT'),
+	   MY_XML.NUMBERS.query('Tariff_Id').value('.', 'INT'),
+	   MY_XML.NUMBERS.query('Date_Open').value('.', 'DATE')
+	 
+	FROM (SELECT CAST(MY_XML AS xml)
+		  FROM OPENROWSET(BULK N'F:\3_course\DB\Course_Project\XML\NUMBERS.xml', SINGLE_BLOB) AS T(MY_XML)) AS T(MY_XML)
+		  CROSS APPLY MY_XML.nodes('NUMBERS') AS MY_XML (NUMBERS);
+	set IDENTITY_INSERT NUMBERS OFF
+
+
+SELECT MY_XML FROM (SELECT CAST(MY_XML AS xml) FROM OPENROWSET(BULK N'F:\3_course\DB\Course_Project\XML\USERS.xml', SINGLE_BLOB) AS T(MY_XML)) AS T(MY_XML)
+CROSS APPLY MY_XML.nodes('USERS_ROOT/USERS') AS MY_XML (USERS);

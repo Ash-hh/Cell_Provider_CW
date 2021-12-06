@@ -344,7 +344,6 @@ app.route('/call')
     })
 
 app.get('/api/scripts/:filename',(req,res)=>{
-    console.log(req.params.filename)
     res.sendFile(__dirname+'/resources/js/'+req.params.filename)
 })
 
