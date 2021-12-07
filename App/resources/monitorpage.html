@@ -2,22 +2,10 @@
 <html>
     <script src="https://www.google.com/jsapi"></script>
     <script src='http://localhost:5000/api/scripts/TableFunctions.js'></script>
+    <script src='http://localhost:5000/api/scripts/AdminController.js'></script>
     <script>
-
-        let interval;
-        let id;
-        function MonitorController(exec){
-
-            fetch(`http://localhost:5000/api/admin/${exec}/${id}`)
-            .then(result=>{
-                if(result.ok)
-                    return result.json();
-            }).then(data=>{
-                console.log(data)
-                ExecsCount.innerHTML='';
-                ExecsCount.append(Renders(exec,data));
-            })
-        }
+       
+        
     </script>
     <style>
        .container {

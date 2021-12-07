@@ -17,7 +17,7 @@ set @number = 100000;
 set @Id = 1;
 set @TafId = 1;
 set @date = '2021-02-02';
-while @iter < 400
+while @iter < 100000
 	begin
 		if(@Id = 10)
 			set @Id = 1;

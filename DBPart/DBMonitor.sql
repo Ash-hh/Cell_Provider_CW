@@ -28,8 +28,8 @@ go
 alter procedure ProcExecsCount
 as
 begin
-	SELECT obj.name, q.query_id, qt.query_text_id, qt.query_sql_text,
-		SUM(rs.count_executions) AS total_execution_count
+	SELECT DISTINCT obj.name, MAX(rs.count_executions) as total_execution_count
+		--SUM(rs.count_executions) AS total_execution_count
 	FROM sys.query_store_query_text AS qt
 		JOIN sys.query_store_query AS q
 			ON qt.query_text_id = q.query_text_id
@@ -39,8 +39,9 @@ begin
 			ON q.query_id = p.query_id
 		JOIN sys.query_store_runtime_stats AS rs
 			ON p.plan_id = rs.plan_id
-		GROUP BY q.query_id, qt.query_text_id, qt.query_sql_text, obj.name
-		ORDER BY total_execution_count DESC;
+	
+		GROUP BY obj.name
+		ORDER BY total_execution_count DESC
 end;
 go
 
@@ -90,13 +91,5 @@ ALTER DATABASE CELL_PROVIDER
 SET QUERY_STORE (OPERATION_MODE = READ_WRITE);
 GO
 
-select * from sys.query_store_query_text;
-select * from sys.query_store_query;
-select * from sys.objects;
-select * from sys.query_store_plan;
-select * from sys.query_store_runtime_stats;
-
-select * from sys.objects
-
-select * from SYS.objects where type = 'U' or type ='P';
+exec ProcExecsCount
 
