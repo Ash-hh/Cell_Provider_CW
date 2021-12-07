@@ -17,7 +17,7 @@ begin
 	declare @sqlCmd varchar(1000)
 	
 	set @fileName = N'F:\3_course\DB\Course_Project\XML\'+@Table+'.xml';
-	set @sqlStr = 'USE CELL_PROVIDER; SELECT * from '+@Table +' FOR XML PATH('''+@Table+'''), ROOT('''+@Table+'_ROOT'')'
+	set @sqlStr = 'USE CELL_PROVIDER; SELECT TOP 100 * from '+@Table +' FOR XML PATH('''+@Table+'''), ROOT('''+@Table+'_ROOT'')'
 	set @sqlCmd = 'bcp.exe "' + @sqlStr + '" queryout ' + @fileName + ' -w -T -r'
 	--print (@fileName);
 	--print (@sqlStr)
@@ -139,7 +139,7 @@ Begin TRY
 End TRY
 BEGIN catch
 	
-	return ERROR_PROCEDURE();
+	return -1;
 END catch
 go
 exec ExportAllToXML

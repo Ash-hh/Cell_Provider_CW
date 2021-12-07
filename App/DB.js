@@ -1,25 +1,12 @@
 let sql = require('mssql/msnodesqlv8');
-
+//TODO: 1000
 let ConnectionPool;
 const config = {
     "driver":"msnodesqlv8",
     "connectionString":"Driver={SQL Server Native Client 11.0};Server={DESKTOP-23913PP};Database={CELL_PROVIDER};Trusted_Connection={yes};",
+    "options":"requestTimeout={300000};cancelTimeout={300000}" 
 };
 
-const sqlConfig = {
-    //user: process.env.DB_USER,
-   // password: process.env.DB_PWD,
-    database: 'CELL_PROVIDER',
-    server: 'DESKTOP-23913PP',
-    pool: {
-      max: 100000000,
-      min: 0,
-      idleTimeoutMillis: 3000000
-    },
-    options: {
-      trustServerCertificate: true 
-    }
-  }
 
 class DB{
     constructor()
@@ -29,6 +16,7 @@ class DB{
             return pool;
         }).catch(err=>{
             console.log(`Connection Failed ${err}`);
+            console.log(err)
         })
     }
 
@@ -265,15 +253,15 @@ class DB{
 
     //Xml Functions
     XMLFunc(exec,callback){  //FIXME: ????? 
-        sql.connect(sqlConfig).then(pool=>{
+        return ConnectionPool.then(pool=>{
             pool.request()
             .execute(exec)
             .then(result=>{   
                 console.log(result);          
                 callback(result.returnValue);
             }).catch(err=>{
-                console.log(err.message)
                 console.log(err)
+                console.log(err.message)
                 callback(-2)
             })
         }).catch(err=>{
