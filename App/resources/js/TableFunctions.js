@@ -281,7 +281,7 @@ function Renders(TableName,arr){
         break;
 
         case 'LongestAVGexecTime':
-                console.log(arr)
+                ExecsCount.innerHTML =''
                 let input = [];
 
                 input.push(["name", "text", { role: "style" } ])
@@ -317,5 +317,64 @@ function Renders(TableName,arr){
             }
            
         break;
+
+
+        case 'LogInfo':
+           
+            return TableRender(
+                ['Id','Table','Operation','Value Before','Value After','Date'],
+                ['OpId','TableName','Operation','BeforeVlue','AfterValue','Date'],
+                arr
+            )
+        break;
+
+        case 'LogInfoCUDCount':
+
+            arr = arr.pop()
+
+            AverageExecTime.innerHTML=`<div class=row> <p>Total operations: ${arr.OperationCount}  <br> Total Session operations: ${arr.OperationCountSession}</p><div id="CUD" class="col"> </div> <div id="CUDSession" class="col"> </div> </div>`
+
+            google.charts.load("current", {packages:["corechart"]});
+            google.charts.setOnLoadCallback(drawChart2);
+            function drawChart2() {
+                var data = google.visualization.arrayToDataTable([
+                ["Operation", "Count"],
+                ['Insert', arr.InsertCount],
+                ['Update', arr.UpdateCount],
+                ['Delete', arr.DeleteCount],
+                
+                ]);
+        
+                var options = {
+                title: 'CUD Operations',
+                is3D: true,
+                };
+        
+                var chart = new google.visualization.PieChart(document.getElementById("CUD"));
+                chart.draw(data, options);
+            }
+
+            google.charts.setOnLoadCallback(drawChartSession);
+            function drawChartSession() {
+                var data = google.visualization.arrayToDataTable([
+                ["Operation", "Count"],
+                ['Insert', arr.InsertCountSession],
+                ['Update', arr.UpdateCountSession],
+                ['Delete', arr.DeleteCountSession],
+                
+                ]);
+        
+                var options = {
+                title: 'Session CUD Operations',
+                is3D: true,
+                };
+        
+                var chart = new google.visualization.PieChart(document.getElementById("CUDSession"));
+                chart.draw(data, options);
+            }
+        break;
+
+
+        
     }
 }

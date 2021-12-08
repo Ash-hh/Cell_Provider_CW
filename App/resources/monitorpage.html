@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <script src="https://www.google.com/jsapi"></script>
-    <script src='http://localhost:5000/api/scripts/TableFunctions.js'></script>
-    <script src='http://localhost:5000/api/scripts/AdminController.js'></script>
+    <script src='http://localhost:5000/api/resources/js/TableFunctions.js'></script>
+    <script src='http://localhost:5000/api/resources/js/AdminController.js'></script>
     <script>
        
         
@@ -51,9 +51,44 @@
 
     </style>
     <body>
-        <input type="button" onclick="MonitorController(this.value)" value="LastExecs">
-        <input type="button" onclick="MonitorController(this.value)" value="ProcExecsCount">
-        <input type="button" onclick="MonitorController(this.value)" value="LongestAVGexecTime">
+        <header>
+            <div>
+                <input type="button" onclick="MonitorController(this.value)" value="LastExecs">
+                <input type="button" onclick="MonitorController(this.value)" value="ProcExecsCount">
+                <input type="button" onclick="MonitorController(this.value)" value="LongestAVGexecTime">
+                <input type="button" onclick="MonitorController(this.value)" value="LogInfoCUDCount">
+            
+            </div>
+            
+            <div>
+                <select id='Type'>
+                    <option selected>All</option>
+                    <option>Session</option>
+                </select>
+                <select id='TableName'>
+                    <option selected>All</option>
+                    <option>USERS</option>
+                    <option>NUMBERS</option>
+                    <option>TARIFFS</option>
+                    <option>CALLS</option>
+                </select>
+                <select id='Operation'>
+                    <option selected>All</option>
+                    <option value="I">INSERT</option>
+                    <option value="U">UPDATE</option>
+                    <option value='D'>DELETE</option>
+                </select>
+                <select id='TimeRange'>
+                    <option>Today</option>
+                    <option>2 Days</option>
+                    <option>Week</option>
+                    <option selected>All Time</option>
+                </select>
+                <input type="button" value="Log Info" onclick="LogController()">
+            </div>
+           
+        </header>
+       
        
         <div class="wrapper">
             <div class="row">
@@ -65,11 +100,11 @@
                 </div>
             </div>
             <div class="row">
-                <div id="AverageExecTime">
-                
+                <div id="AverageExecTime" class="col">
+                    
                 </div>
-            </div>  
-               
+                
+            </div>
         </div>
         
             

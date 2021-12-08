@@ -4,3 +4,4 @@ CREATE NONCLUSTERED INDEX Call_Index on CALLS(Call_Id);
 
 CREATE NONCLUSTERED INDEX Numbers_Nums on NUMBERS(Number);
 
+CREATE NONCLUSTERED INDEX Log_Index on CUDlogAllTime(OperationKey, TableName, Date)

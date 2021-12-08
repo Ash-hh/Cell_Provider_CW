@@ -1,3 +1,5 @@
+
+
 let arr=[];     
                 
 function DBInfo(){
@@ -182,15 +184,71 @@ function AddTariff(){
 
 
 function MonitorController(exec){
-
+  
     fetch(`http://localhost:5000/api/admin/${exec}/0`)
     .then(result=>{
         if(result.ok)
             return result.json();
     }).then(data=>{
-        console.log(data)
-        ExecsCount.innerHTML='';
-        ExecsCount.append(Renders(exec,data));
+       
+        if(exec == 'ProcExecsCount'){
+            ExecsCount.innerHTML='';
+            ExecsCount.append(Renders(exec,data));
+        } else if(exec == 'LongestAVGexecTime' || exec == 'LogInfoCUDCount'){
+            Renders(exec,data)
+        } else {
+            LastExecs.innerHTML='';
+            LastExecs.append(Renders(exec,data));
+        }
+        
     })
+}
+
+
+function LogController(){
+    console.log(Type.value)
+
+    let date;
+    let daterange;
+
+    let now = Date.now();
+
+    switch(TimeRange.value){
+        case 'Today':
+            date = `${now.getYear()}-${now.getMonth()}-${now.getDay()}`
+        break;
+
+        case '2 Days':
+            date = `${now.getYear()}-${now.getMonth()}-${now.getDay()}`
+            daterange =   `${now.getYear()}-${now.getMonth()}-${now.getDay()-1}` 
+        break;
+
+        case 'Week':
+
+        break;
+    }
+
+    console.log(date,daterange)
+
+    fetch(`http://localhost:5000/api/log/`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            mode:Type.value,
+            table:TableName.value == 'All' ? undefined : TableName.value,
+            key:Operation.value == 'All' ? undefined : Operation.value,
+            date:date,
+            daterange:daterange
+        })
+    }).then(result=>{
+        return result.json()
+    }).then(data=>{
+        LastExecs.innerHTML='';
+        ExecsCount.innerHTML='';
+        ExecsCount.append(Renders('LogInfo',data));
+       
+    })
+
+
 }
 

@@ -10,7 +10,7 @@ app.use(express.urlencoded({extended:true}));
 
 
 
-app.route('/register') //TODO: hash
+app.route('/register') 
     .get((req,res)=>{
         res.sendFile(__dirname+'/resources/register.html');
     })
@@ -253,6 +253,9 @@ app.route('/subtariff')
 
 app.route('/api/admin/:exec/:id') 
     .post((req,res)=>{
+
+        console.log(req.params.exec)
+
         if(req.params.exec != 'AddTariff'){
             DB[req.params.exec](req.params.id,req.body)
         } else {
@@ -284,7 +287,17 @@ app.route('/api/admin/:exec/:id')
     })
 
 
-
+app.post('/api/log',(req,res)=>{
+    DB.LogInfo(
+        req.body.mode,
+        req.body.table,
+        req.body.key,
+        req.body.date,
+        req.body.daterange
+    ).then(result=>{
+        res.json(result)
+    })
+})
 
 app.get('/Admin/:page',(req,res)=>{
 
@@ -343,8 +356,9 @@ app.route('/call')
         
     })
 
-app.get('/api/scripts/:filename',(req,res)=>{
-    res.sendFile(__dirname+'/resources/js/'+req.params.filename)
+app.get('/api/resources/:dir/:filename',(req,res)=>{
+    console.log(`${req.params.dir}/${req.params.filename}`)
+    res.sendFile(__dirname+`/resources/${req.params.dir}/${req.params.filename}`)
 })
 
 app.listen(5000);
@@ -352,5 +366,5 @@ app.listen(5000);
 DB.SetFreeNumbers();
 
 //TODO: change bill calc system
-//TODO: 100 000 строк, поэтапный вывод, обновить SetFreeNums
+
     

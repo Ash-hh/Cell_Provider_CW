@@ -1,5 +1,7 @@
 let sql = require('mssql/msnodesqlv8');
 //TODO: 1000
+
+//TODO: triggers DDL \ DML all, session
 let ConnectionPool;
 const config = {
     "driver":"msnodesqlv8",
@@ -71,7 +73,7 @@ class DB{
        
         sql.connect(config).then(pool=>{
             pool.request()
-            .input('Description',sql.NText,Tariff.Description)
+            .input('Description',sql.NVarChar,Tariff.Description)
             .input('CallCostPerMin',sql.Money,Tariff.Call_Cost_perm)
             .execute('TariffAdd')
         }).catch(err=>{
@@ -287,7 +289,27 @@ class DB{
         }) 
     }
 
-    
+    LogInfo(mode,table,key,date,daterange){
+        
+        let exec = mode == 'Session' ? 'LogInfoSession' : 'LogInfo'
+
+        return ConnectionPool.then(pool=>{
+            let request = pool.request()
+
+            if(table){request.input('TableName',sql.VarChar,table)}
+            if(key){request.input('Key',sql.VarChar,key)}
+            if(date){request.input('Date',sql.VarChar,date)}
+            if(daterange){request.input('DateRange',sql.VarChar,daterage)}
+           
+            return request.execute(exec)
+            .then(records=>{
+                return records.recordset
+            })
+        })
+        
+    }
+
+
 
 
 }
