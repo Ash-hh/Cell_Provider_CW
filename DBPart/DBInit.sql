@@ -30,9 +30,10 @@ create table USERS
 create table TARIFFS
 (
 	Tariff_Id int identity(1,1) constraint TARIFFS_PK primary key,
-	Description ntext,
+	Description varchar(max),
 	Call_Cost_perm money
 );
+
 
 
 create table NUMBERS

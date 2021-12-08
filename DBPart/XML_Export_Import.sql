@@ -142,12 +142,6 @@ BEGIN catch
 	return -1;
 END catch
 go
-exec ExportAllToXML
-
-declare @result int; exec @result = ImportFromXml; print(@result)
-
-
-
 
 create procedure DeleteAll
 as
@@ -161,34 +155,6 @@ begin
 end;
 go
 
-exec DeleteAll
-
-use CELL_PROVIDER
-
-select *  from CALLS
-select * FROM USER_TYPE
-select * from USERS
-select * from TARIFFS
-select * from NUMBERS
-
-exec ExportToXML 'NUMBERS'
 
 
 
-set IDENTITY_INSERT NUMBERS ON
-	INSERT INTO NUMBERS(Number_Id,Number,User_Id,Tariff_Id,Date_Open)
-	SELECT
-	   MY_XML.NUMBERS.query('Number_Id').value('.', 'INT'),
-	   MY_XML.NUMBERS.query('Number').value('.', 'INT'),
-	   MY_XML.NUMBERS.query('User_Id').value('.', 'INT'),
-	   MY_XML.NUMBERS.query('Tariff_Id').value('.', 'INT'),
-	   MY_XML.NUMBERS.query('Date_Open').value('.', 'DATE')
-	 
-	FROM (SELECT CAST(MY_XML AS xml)
-		  FROM OPENROWSET(BULK N'F:\3_course\DB\Course_Project\XML\NUMBERS.xml', SINGLE_BLOB) AS T(MY_XML)) AS T(MY_XML)
-		  CROSS APPLY MY_XML.nodes('NUMBERS') AS MY_XML (NUMBERS);
-	set IDENTITY_INSERT NUMBERS OFF
-
-
-SELECT MY_XML FROM (SELECT CAST(MY_XML AS xml) FROM OPENROWSET(BULK N'F:\3_course\DB\Course_Project\XML\USERS.xml', SINGLE_BLOB) AS T(MY_XML)) AS T(MY_XML)
-CROSS APPLY MY_XML.nodes('USERS_ROOT/USERS') AS MY_XML (USERS);

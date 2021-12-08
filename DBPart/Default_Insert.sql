@@ -8,8 +8,8 @@ values
 ('Tarif nu prosta bomba',2),
 ('Pushka a ne tarif',3);
 
-select * from NUMBERS
-select * from CALLS
+
+
 
 declare @number int, @iter int, @Id int, @TafId int, @date date;
 set @iter = 1;
@@ -17,7 +17,7 @@ set @number = 100000;
 set @Id = 1;
 set @TafId = 1;
 set @date = '2021-02-02';
-while @iter < 100000
+while @iter < 10
 	begin
 		if(@Id = 10)
 			set @Id = 1;
@@ -32,7 +32,8 @@ while @iter < 100000
 		set @TafId = @TafId+1;
 	end;
 
-	
+
+
 
 
 
