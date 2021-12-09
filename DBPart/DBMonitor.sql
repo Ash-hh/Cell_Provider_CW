@@ -23,7 +23,7 @@ end;
 go
 
 exec LastExecs
-
+exec ProcExecsCount
 go
 alter procedure ProcExecsCount
 as
@@ -44,7 +44,7 @@ begin
 		ORDER BY total_execution_count DESC
 end;
 go
-
+exec AllTariffs
 exec ProcExecsCount
 
 
@@ -52,7 +52,7 @@ go
 alter procedure LongestAVGexecTime --наибольшее среднее время выполнения
 as
 begin
-	SELECT obj.name,SUM(rs.avg_duration) as sumAvg FROM sys.query_store_query_text AS qt
+	SELECT TOP 10 obj.name,SUM(rs.avg_duration) as sumAvg FROM sys.query_store_query_text AS qt
 					JOIN sys.query_store_query AS q
 						ON qt.query_text_id = q.query_text_id
 					JOIN sys.objects AS obj
@@ -524,43 +524,51 @@ begin
 end
 
 go
-create procedure LogInfoSession 
+alter procedure LogInfoSession 
 	@TableName varchar(20) = NULL,
 	@Key varchar(2) = NULL,
 	@Date date = NULL,
 	@DateRange date = NULL
 as
 begin
-	if exists (select * from tempdb.dbo.sysobjects where name='##CUDlogSession' )
+	if not exists (select * from tempdb.dbo.sysobjects where name='##CUDlogSession' )
 	begin
-	if @Date != NULL
-	begin
-		if @DateRange != NULL
-		begin
-
-			select * from ##CUDlogSession where Date between @Date and @DateRange
-			except
-			select * from ##CUDlogSession where OperationKey != @Key
-			except
-			select * from ##CUDlogSession where TableName != @TableName
-
-		end
-
-			select * from ##CUDlogSession where Date = @Date
-			except
-			select * from ##CUDlogSession where OperationKey != @Key
-			except
-			select * from ##CUDlogSession where TableName != @TableName
-
-	end else 
-		begin 
-			select * from ##CUDlogSession
-			except
-			select * from ##CUDlogSession where OperationKey != @Key
-			except
-			select * from ##CUDlogSession where TableName != @TableName
-		end
+		create table ##CUDlogSession(
+			OpId int identity(1,1),
+			OperationKey varchar(2),
+			Operation varchar(20),
+			TableName varchar(20),
+			BeforeVlue varchar(max),
+			AfterValue varchar(max),
+			Date date);
 	end
+		if @Date != NULL
+		begin
+			if @DateRange != NULL
+			begin
+
+				select * from ##CUDlogSession where Date between @Date and @DateRange
+				except
+				select * from ##CUDlogSession where OperationKey != @Key
+				except
+				select * from ##CUDlogSession where TableName != @TableName
+
+			end
+
+				select * from ##CUDlogSession where Date = @Date
+				except
+				select * from ##CUDlogSession where OperationKey != @Key
+				except
+				select * from ##CUDlogSession where TableName != @TableName
+
+		end else 
+			begin 
+				select * from ##CUDlogSession
+				except
+				select * from ##CUDlogSession where OperationKey != @Key
+				except
+				select * from ##CUDlogSession where TableName != @TableName
+			end
 end
 
 
@@ -603,4 +611,5 @@ declare @Stat as [dbo].[LogStats]
 	select * from @Stat
 end
 
-exec LogInfoCUDCount
+
+exec LogInfoSession 
