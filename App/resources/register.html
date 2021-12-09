@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" type="text/css" href='http://localhost:5000/api/resources/css/buttons_links.css'>
+        <link rel="stylesheet" type="text/css" href='http://localhost:5000/api/resources/css/login.css'>
+       
+
         <title>
-            register
+            Register
         </title>
     </head>
     <body>
@@ -17,7 +21,7 @@
             <input type="text" name="midname">
             <br>
             <label>Date Of Birth</label>
-            <input type="text" name="dateOfBirth">
+            <input calss="date" type="date" name="dateOfBirth">
             <br>
             <label>login</label>
             <input type="text" name="login">
@@ -25,8 +29,10 @@
             <label>password</label>
             <input type="text" name="password">
             <br>
-            <input type="submit">
+            <input class='custom-btn btn' type="submit">
         </form>
+        <a class="underline" href='http://localhost:5000/register'>Register</a>
+        <a class="underline" href='http://localhost:5000/'>Main Page</a>
     </body>
 
 </html>

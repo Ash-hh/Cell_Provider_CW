@@ -13,6 +13,8 @@ p{
 }
 
 a{
+  margin-left: 1px;
+  margin-right: 3px;
   text-decoration: none;
   color: #0074D9;
 }
