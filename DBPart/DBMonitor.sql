@@ -494,34 +494,42 @@ alter procedure LogInfo
 	@DateRange date = NULL
 as
 begin
-	if @Date != NULL
+	print(@Date)
+	if @Date is NOT NULL
 	begin
-		if @DateRange != NULL
+	
+		if @DateRange is NOT NULL
 		begin
-
-			select * from CUDlogAllTime where Date between @Date and @DateRange
+			
+			select * from CUDlogAllTime where Date between @DateRange and  @Date
 			except
 			select * from CUDlogAllTime where OperationKey != @Key
 			except
 			select * from CUDlogAllTime where TableName != @TableName
 
-		end
+		end else 
+				begin
+					
+					select * from CUDlogAllTime where Date = @Date
+					except
+					select * from CUDlogAllTime where OperationKey != @Key
+					except
+					select * from CUDlogAllTime where TableName != @TableName
+				end
 
-			select * from CUDlogAllTime where Date = @Date
-			except
-			select * from CUDlogAllTime where OperationKey != @Key
-			except
-			select * from CUDlogAllTime where TableName != @TableName
-
-	end else 
-		begin 
-			select * from CUDlogAllTime
-			except
-			select * from CUDlogAllTime where OperationKey != @Key
-			except
-			select * from CUDlogAllTime where TableName != @TableName
-		end
+	end 
+	else
+	begin 
+		
+		select * from CUDlogAllTime
+		except
+		select * from CUDlogAllTime where OperationKey != @Key
+		except
+		select * from CUDlogAllTime where TableName != @TableName
+	end
 end
+	
+	exec LogInfo @Date = '2021-12-09', @DateRange = '2021-12-02'
 
 go
 alter procedure LogInfoSession 
@@ -542,24 +550,25 @@ begin
 			AfterValue varchar(max),
 			Date date);
 	end
-		if @Date != NULL
+		if @Date is NOT NULL
 		begin
-			if @DateRange != NULL
+			if @DateRange is NOT NULL
 			begin
 
-				select * from ##CUDlogSession where Date between @Date and @DateRange
+				select * from ##CUDlogSession where Date between @DateRange and @Date
 				except
 				select * from ##CUDlogSession where OperationKey != @Key
 				except
 				select * from ##CUDlogSession where TableName != @TableName
 
-			end
-
-				select * from ##CUDlogSession where Date = @Date
-				except
-				select * from ##CUDlogSession where OperationKey != @Key
-				except
-				select * from ##CUDlogSession where TableName != @TableName
+			end else
+					begin
+						select * from ##CUDlogSession where Date = @Date
+						except
+						select * from ##CUDlogSession where OperationKey != @Key
+						except
+						select * from ##CUDlogSession where TableName != @TableName
+					end
 
 		end else 
 			begin 
@@ -612,4 +621,3 @@ declare @Stat as [dbo].[LogStats]
 end
 
 
-exec LogInfoSession 

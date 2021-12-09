@@ -215,21 +215,24 @@ function LogController(){
 
     let date;
     let daterange;
-
-    let now = Date.now();
+   
+    let today = new Date()
 
     switch(TimeRange.value){
         case 'Today':
-            date = `${now.getYear()}-${now.getMonth()}-${now.getDay()}`
+            date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+            console.log(date)
         break;
 
         case '2 Days':
-            date = `${now.getYear()}-${now.getMonth()}-${now.getDay()}`
-            daterange =   `${now.getYear()}-${now.getMonth()}-${now.getDay()-1}` 
+           
+            date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+            daterange = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()-1).padStart(2, '0')}`
         break;
 
         case 'Week':
-
+            date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+            daterange = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()-7).padStart(2, '0')}`
         break;
     }
 

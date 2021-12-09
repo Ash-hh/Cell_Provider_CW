@@ -104,7 +104,7 @@ function UserInfo(data){
     }
 }
 
-//TODO: call history
+
 function AuthorizedUserInfo(data){
     ProfileInfo.innerHTML += `
         <p><span id='BallanceValue'>Ballance: ${data.User.Ballance}</span>

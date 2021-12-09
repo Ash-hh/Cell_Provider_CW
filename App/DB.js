@@ -291,11 +291,11 @@ class DB{
 
         return ConnectionPool.then(pool=>{
             let request = pool.request()
-
+            console.log(date,daterange)
             if(table){request.input('TableName',sql.VarChar,table)}
             if(key){request.input('Key',sql.VarChar,key)}
             if(date){request.input('Date',sql.VarChar,date)}
-            if(daterange){request.input('DateRange',sql.VarChar,daterage)}
+            if(daterange){request.input('DateRange',sql.VarChar,daterange)}
            
             return request.execute(exec)
             .then(records=>{
