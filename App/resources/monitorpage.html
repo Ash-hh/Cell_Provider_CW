@@ -1,62 +1,49 @@
 <!DOCTYPE html>
 <html>
-    <script src="https://www.google.com/jsapi"></script>
-    <script src='http://localhost:5000/api/resources/js/TableFunctions.js'></script>
-    <script src='http://localhost:5000/api/resources/js/AdminController.js'></script>
-    <script>
+    <head>
+        <title>Monitoring</title>
+        <link rel="stylesheet" 
+        type="text/css" 
+        href='http://localhost:5000/api/resources/css/buttons_links.css'>
+        <script src="https://www.google.com/jsapi"></script>
+        <script src='http://localhost:5000/api/resources/js/TableFunctions.js'></script>
+        <script src='http://localhost:5000/api/resources/js/AdminController.js'></script>
        
-        
-    </script>
-    <style>
-       .container {
-            height: 100%;
-           
-        }
-        /*
-        #LastExecs { 
-            float: left;
-            border: 1px solid #C1C1C1;
-            overflow: auto;
-            height: 99%;
-
-        }
-
-        #ExecsCount {
+        <style>
+        .container {
+                height: 100%;
             
-            float: left;
-            border: 1px solid #C1C1C1;
-            overflow: auto;
-            height: 99%;
-        }*/
+            }
 
-        * {
-            box-sizing: border-box;
-        }
+            * {
+                box-sizing: border-box;
+            }
 
 
 
-        .wrapper {
-            padding-right: 20px;
-        }
+            .wrapper {
+                padding-right: 20px;
+            }
 
-        .row {
-            clear: both;
-        }
-        .col {
-            float: left;
-            margin-left: 20px;
-         
-           
-        }
+            .row {
+                clear: both;
+            }
+            .col {
+                float: left;
+                margin-left: 20px;
+            
+            
+            }
 
-    </style>
+        </style>
+    </head>
     <body>
         <header>
             <div>
-                <input type="button" onclick="MonitorController(this.value)" value="LastExecs">
-                <input type="button" onclick="MonitorController(this.value)" value="ProcExecsCount">
-                <input type="button" onclick="MonitorController(this.value)" value="LongestAVGexecTime">
-                <input type="button" onclick="MonitorController(this.value)" value="LogInfoCUDCount">
+                <button class='custom-btn btn' type="button" onclick="MonitorController(this.value)" value="LastExecs">Last Executions</button>
+                <button class='custom-btn btn' type="button" onclick="MonitorController(this.value)" value="ProcExecsCount">Procedure Executions</button>
+                <button class='custom-btn btn' type="button" onclick="MonitorController(this.value)" value="LongestAVGexecTime">Average Executions</button>
+                <button class='custom-btn btn' type="button" onclick="MonitorController(this.value)" value="LogInfoCUDCount">CUD Stats</button>
             
             </div>
             
@@ -84,7 +71,7 @@
                     <option>Week</option>
                     <option selected>All Time</option>
                 </select>
-                <input type="button" value="Log Info" onclick="LogController()">
+                <input class='custom-btn btn' type="button" value="Log Info" onclick="LogController()">
             </div>
            
         </header>

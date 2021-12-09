@@ -60,7 +60,7 @@ function TableRender(HeaderArray,PropertyArray,Data,Controller){
     }
 
     function ButtonRender(ButtonController, Data){
-        let button = '<button '
+        let button = '<button class="custom-btn btn"'
            
         if(ButtonController.id || ButtonController.idValueProperty){
             button += ` id='${PropertySetData(ButtonController,['id','idValueProperty'],Data)}' `            
@@ -83,6 +83,18 @@ function TableRender(HeaderArray,PropertyArray,Data,Controller){
         return button
     }
 
+
+    function DateParse(date){
+        let result = new Date(date);
+       
+        if(result.getHours() != 3 && result.getMinutes() != 0 && result.getSeconds() != 0){
+           
+            return `${date.slice(0,10)}-${result.getHours()}:${result.getMinutes()}:${result.getSeconds()}`
+        } else {
+            return date.slice(0,10);
+        }
+    }
+
     let Table = document.createElement("table")
 
     let tableHeader = Table.insertRow();
@@ -97,7 +109,13 @@ function TableRender(HeaderArray,PropertyArray,Data,Controller){
         Data.forEach(element => {
             let row = Table.insertRow();
             for(let i = 0;i<PropertyArray.length;i++){
-                row.insertCell().append(element[PropertyArray[i]])
+                if(PropertyArray[i].indexOf('Date')!=-1 || PropertyArray[i].indexOf('time') !=-1){
+                   
+                    row.insertCell().append(DateParse(element[PropertyArray[i]]))
+                } else {
+                    row.insertCell().append(element[PropertyArray[i]])
+                }
+              
             }
 
            

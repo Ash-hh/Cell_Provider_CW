@@ -109,16 +109,18 @@ function AuthorizedUserInfo(data){
     ProfileInfo.innerHTML += `
         <p><span id='BallanceValue'>Ballance: ${data.User.Ballance}</span>
             <button
+                class='custom-btn btn'
                 name="UserBallance"
                 value='${data.User.User_Id}'
                 onclick="BallanceUpdate({id:this.value,name:this.name,ballance:${data.User.Ballance}})">
-            Top up</button> 
+            <span>Top up</span></button> 
         </p>
         <button
+            class='custom-btn btn'
             name="UserDelete"
             value='${data.User.User_Id}'
             onclick="profileController({id:this.value,name:this.name})">
-        Delete My Account </button>    
+            <span>Delete My Account</span> </button>    
         <hr>
     `
 

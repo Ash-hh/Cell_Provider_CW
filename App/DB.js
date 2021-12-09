@@ -1,7 +1,5 @@
 let sql = require('mssql/msnodesqlv8');
-//TODO: 1000
 
-//TODO: triggers DDL \ DML all, session
 let ConnectionPool;
 const config = {
     "driver":"msnodesqlv8",
@@ -163,7 +161,7 @@ class DB{
     }
 
     
-    //TODO: Union start
+    
     DeleteUser(id){
         sql.connect(config).then(pool=>{
             pool.request().input('Id',sql.Int,id).execute('UserDelete')
@@ -187,7 +185,7 @@ class DB{
             pool.request().input('Id',sql.Int,id).execute('CallDelete')
         });
     }
-      //TODO: Union end
+     
 
     DeleteFromTable(id,exec){
         sql.connect(config).then(pool=>{
@@ -230,9 +228,7 @@ class DB{
             .input('time',sql.Int,Time)
             .execute('CallStart')
             .then(result=>{   
-                console.log('-------------');
-                console.log(result);
-                console.log('-------------');
+              
                 return result.returnValue; 
             })
         })
@@ -246,7 +242,7 @@ class DB{
             .input('timeEnd',sql.Int,Time)
             .execute('CallEnd')
             .then(result=>{    
-                console.log(result);               
+                            
                 return result.recordset.pop(); 
             })
         })
@@ -259,7 +255,7 @@ class DB{
             pool.request()
             .execute(exec)
             .then(result=>{   
-                console.log(result);          
+                       
                 callback(result.returnValue);
             }).catch(err=>{
                 console.log(err)

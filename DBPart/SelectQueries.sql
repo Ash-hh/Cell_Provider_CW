@@ -96,7 +96,7 @@ begin
 	select @bill as Bill,Ballance from USERS where User_Id = @User_Id;
 end;
 
-exec CallEnd 47,100001,23
+
 
 
 --Solve Problems of NUMBERS table
@@ -181,8 +181,6 @@ close cursor_freeNums
 deallocate cursor_freeNums
 go
 use CELL_PROVIDER
-exec SetFreeNums
-exec GetNumber
 
 
 

@@ -138,15 +138,15 @@ function PopUpShow(mode,id,name){
     } else if (mode === 'Delete'){
         
         popup_content.innerHTML =`
-        <input type='button' value='close' onclick='PopUpHide()'>
+        <input class='custom-btn btn' type='button' value='close' onclick='PopUpHide()'>
         <form name="TariffFormAdd">
             <label> Description </label>
             <input type="text" name="Description">
             <br>
             <label> Call Cost </label>
-            <input type="text" name ="Call_Cost" >
+            <input type="number" name ="Call_Cost" >
             <br>
-            <input type="button" value="Add" onclick="AddTariff()">
+            <input class='custom-btn btn' type="button" value="Add" onclick="AddTariff()">
         </form>`
     }
 
@@ -195,6 +195,8 @@ function MonitorController(exec){
             ExecsCount.innerHTML='';
             ExecsCount.append(Renders(exec,data));
         } else if(exec == 'LongestAVGexecTime' || exec == 'LogInfoCUDCount'){
+            LastExecs.innerHTML='';
+            ExecsCount.innerHTML=''
             Renders(exec,data)
         } else {
             LastExecs.innerHTML='';
@@ -206,6 +208,9 @@ function MonitorController(exec){
 
 
 function LogController(){
+
+    AverageExecTime.innerHTML=''
+
     console.log(Type.value)
 
     let date;

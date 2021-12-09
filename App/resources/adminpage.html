@@ -1,38 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>
-            #popup, #awaitPopUp{
-                width:100%;
-                min-height:100%;
-                background-color: rgba(0,0,0,0.5);
-                overflow:hidden;
-                position:fixed;
-                visibility: hidden;
-                top:0px;
-                
-            }
-            #popup #popup_content{
-                margin:40px auto 0px auto;
-                width:420px;
-                height: 90px;
-                padding:10px;
-                background-color: #c5c5c5;
-                border-radius:5px;
-                box-shadow: 0px 0px 10px #000;
-            }       
+        <title>Admin Page</title>
+        <link rel="stylesheet" 
+        type="text/css" 
+        href='http://localhost:5000/api/resources/css/buttons_links.css'>
 
-            header{
-                margin-bottom: 10px;
-            }
+        <link rel="stylesheet" 
+        type="text/css" 
+        href='http://localhost:5000/api/resources/css/adminpage.css'>
+        <style>
+            
         </style>
     </head>
     <body onload='DBInfo()'>
         <script src="http://localhost:5000/api/resources/js/TableFunctions.js"></script>
         <script src="http://localhost:5000/api/resources/js/AdminController.js"></script>
         <header id='header'>
-            <a href="http://localhost:5000/">Main Page</a>
-            <a href="http://localhost:5000/Admin/monitor">DB Monitoring</a>
+            <a class ='underline' href="http://localhost:5000/">Main Page</a>
+            <a class ='underline' href="http://localhost:5000/Admin/monitor">DB Monitoring</a>
         </header>
         <div id="awaitPopUp">
             <h1>This operation may take a few minutes...</h1>
@@ -43,13 +29,13 @@
             </div>
         </div>
         <div>
-            <input type='button' name="AllUsers" value="AllUsers" onclick="send(this.name)">
-            <input type='button' name="AllTariffs" value="AllTariffs" onclick="send(this.name)">
-            <input type='button' name="AllNumbers" value="AllNumbers" onclick="send(this.name)">
-            <input type='button' name="AllCalls" value="AllCalls" onclick="send(this.name)">
-            <input type='button' name="AddTariff"value="AddTariff" onclick="PopUpShow('Delete')">            
-            <input type='button' name="ExportAllToXml"value="ExportAllToXml" onclick="send(this.name)">              
-            <input type='button' name="ImportFromXml"value="ImportFromXml" onclick="send(this.name)">
+            <button class="custom-btn btn" type='button' name="AllUsers" value="AllUsers" onclick="send(this.name)">Users</button>
+            <button class="custom-btn btn" type='button' name="AllTariffs" value="AllTariffs" onclick="send(this.name)">Tariffs</button>
+            <button class="custom-btn btn" type='button' name="AllNumbers" value="AllNumbers" onclick="send(this.name)">Numbers</button>
+            <button class="custom-btn btn" type='button' name="AllCalls" value="AllCalls" onclick="send(this.name)">Calls</button>
+            <button class="custom-btn btn" type='button' name="AddTariff"value="AddTariff" onclick="PopUpShow('Delete')">Add Tariff</button>            
+            <button class="custom-btn btn" type='button' name="ExportAllToXml"value="ExportAllToXml" onclick="send(this.name)">XML Export</button>              
+            <button class="custom-btn btn" type='button' name="ImportFromXml"value="ImportFromXml" onclick="send(this.name)">XML Import</button>
            
                 
             </select>

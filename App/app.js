@@ -20,7 +20,7 @@ app.route('/register')
             if(!records){
                
                 let hash = bcrypt.hashSync(req.body.password.trim(), 5);
-                console.log(hash)
+              
                 DB.AddUser(req.body.username,
                     req.body.surname,
                     req.body.midname,
@@ -92,7 +92,7 @@ app.get('/api/all/:exec',(req,res)=>{
 
 app.get('/api/findbyid/:exec/:id',(req,res)=>{
     if(req.params.id && req.params.exec){
-        console.log(req.params)
+       
         let id = req.params.id === 'cookie' ? 
         (req.cookies.User ? req.cookies.User.User_Id : undefined)
         : req.params.id;
@@ -254,13 +254,12 @@ app.route('/subtariff')
 app.route('/api/admin/:exec/:id') 
     .post((req,res)=>{
 
-        console.log(req.params.exec)
+      
 
         if(req.params.exec != 'AddTariff'){
             DB[req.params.exec](req.params.id,req.body)
         } else {
-            console.log('body')
-            console.log(req.body)
+            
             DB[req.params.exec](req.body)
         }
 
@@ -326,7 +325,7 @@ app.route('/call')
     .post((req,res)=>{
 
         if(req.body.submit === 'Start Call'){
-            console.log(req.body);
+           
             DB.StartCall(req.body.sender,req.body.receiver,(req.body.min*60)+req.body.second)
             .then(records=>{
                
