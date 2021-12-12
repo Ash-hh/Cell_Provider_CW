@@ -24,9 +24,9 @@ function DBInfo(){
 function pageChange(name){
    
     TableRowsChange(name,(firstRow,lastRow,canChange)=>{
-        console.log(canChange)
+       
         if(canChange){
-            console.log(firstRow,lastRow)
+           
           
             let tableName = BtnFirstRow.name;
             fetch(`http://localhost:5000/api/all/${tableName}/${firstRow}/${lastRow}`)
@@ -34,7 +34,7 @@ function pageChange(name){
                 return result.json()
             }).then(data=>{    
                 arr = data;
-                console.log()
+              
                 resultDiv.innerHTML = '';
                 resultDiv.append(Renders(tableName,arr))
                 let rows = TableRowsControl(resultDiv,firstRow,arr,'pageChange',tableName)
@@ -63,8 +63,6 @@ function send(Button_Value){
             resultDiv.innerHTML = '';
             resultDiv.append(Renders(Button_Value,arr))
             let rows = TableRowsControl(resultDiv,currentFirstRow,arr,'pageChange',Button_Value)
-            console.log(arr)
-            
         })
 
        
@@ -85,9 +83,8 @@ function send(Button_Value){
 
 function ControllerFunc(id,name,value,Tariff=undefined){
 
-   console.log(value)
-
-     
+    let tableName='';  
+   
     let searchelem = arr.find(user => user[name] == id);
     
     let elemId =  arr.indexOf(searchelem); 
@@ -130,20 +127,25 @@ function ControllerFunc(id,name,value,Tariff=undefined){
         {   
             if(value.exec == 'AddTariff'){
                 send('AllTariffs')
+                return 0;
             } else {    
-                resultDiv.append(Renders('AllTariffs',arr))
+                tableName ='AllTariffs';
             }
         }   
 
         if(value.exec.indexOf('Number')!=-1) {
-            resultDiv.append(Renders('AllNumbers',arr))
+            tableName = 'AllNumbers';
         }
         if(value.exec.indexOf('User')!=-1) {
-            resultDiv.append(Renders('AllUsers',arr))
+            tableName='AllUsers';
         }
         if(value.exec.indexOf('Call')!=-1) {
-            resultDiv.append(Renders('AllCalls',arr))
+            tableName='AllCalls';
         }
+
+        resultDiv.append(Renders(tableName,arr))
+        let rows = TableRowsControl(resultDiv,currentFirstRow,arr,'pageChange',tableName)
+       
 
     })
 
@@ -171,7 +173,7 @@ function PopUpShow(mode,id,name){
             <input type="button" value="Edit" onclick="TariffEdit(${id})">
         </form>`
 
-    } else if (mode === 'Delete'){
+    } else if (mode === 'Add'){
         
         popup_content.innerHTML =`
         <input class='custom-btn btn' type='button' value='close' onclick='PopUpHide()'>
@@ -180,7 +182,7 @@ function PopUpShow(mode,id,name){
             <input type="text" name="Description">
             <br>
             <label> Call Cost </label>
-            <input type="number" name ="Call_Cost" >
+            <input type="number" name ="Call_Cost" min='0' max='1000'>
             <br>
             <input class='custom-btn btn' type="button" value="Add" onclick="AddTariff()">
         </form>`
@@ -251,7 +253,7 @@ function LogController(){
     currentLogLastRow = 50;
     AverageExecTime.innerHTML=''
 
-    console.log(Type.value)
+    
 
     let date;
     let daterange;
@@ -261,7 +263,7 @@ function LogController(){
     switch(TimeRange.value){
         case 'Today':
             date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-            console.log(date)
+            
         break;
 
         case '2 Days':
@@ -276,9 +278,9 @@ function LogController(){
         break;
     }
 
-    console.log(date,daterange)
+   
 
-    fetch(`http://localhost:5000/api/log/${currentLogFirstRow}/${currentLogLastRow}`,{ //TODO: current task
+    fetch(`http://localhost:5000/api/log/${currentLogFirstRow}/${currentLogLastRow}`,{ 
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
@@ -306,7 +308,7 @@ function LogController(){
 function pageChangeLog(name){
     TableRowsChange(name,(firstRow,lastRow,canChange)=>{
 
-        console.log(canChange)
+      
 
         if(canChange){
 
@@ -318,7 +320,7 @@ function pageChangeLog(name){
             switch(TimeRange.value){
                 case 'Today':
                     date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-                    console.log(date)
+                    
                 break;
         
                 case '2 Days':
@@ -333,8 +335,8 @@ function pageChangeLog(name){
                 break;
             }
 
-            console.log(firstRow,lastRow)
-            fetch(`http://localhost:5000/api/log/${firstRow}/${lastRow}`,{ //TODO: current task
+           
+            fetch(`http://localhost:5000/api/log/${firstRow}/${lastRow}`,{ 
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({
