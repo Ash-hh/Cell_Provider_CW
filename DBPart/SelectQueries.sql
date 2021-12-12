@@ -17,21 +17,45 @@ USE CELL_PROVIDER
 go
 alter procedure FindUserNumbers
 (
-	@Id int
+	@Id int,
+	@firstRow int = NULL,
+	@lastRow int = NULL
 )
 as
 	begin
-		select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id
+	if @firstRow is not NULL and @lastRow is not NULL
+	begin
+		with row_nums as
+		(
+			SELECT row_number() over(order by Number_Id) as num, 
+			* from (
+				select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id
+			) as resultSet
+		)
+		select * from row_nums where num between @firstRow and @lastRow
+	end else 
+		begin
+			select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id	
+		end
 	end;
 go
 
-create procedure FindUserCalls
+alter procedure FindUserCalls
 (
-	@Id int
+	@Id int,
+	@firstRow int,
+	@lastRow int
 )
 as
 	begin
-		select * from CALLS where User_Sender_Id = @Id;
+		with row_nums as
+		(
+			SELECT row_number() over(order by Call_Id) as num, 
+			* from (
+				select * from CALLS where User_Sender_Id = @Id
+			) as resultSet
+		)
+		select * from row_nums where num between @firstRow and @lastRow
 	end;
 go
 

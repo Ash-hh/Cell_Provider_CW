@@ -21,12 +21,13 @@ function onloadTariffs(){
 
     let refconfig = 'http://localhost:5000';
 
-    fetch('http://localhost:5000/api/all/AllTariffs')
+    fetch('http://localhost:5000/api/all/AllTariffs/1/50')
     .then(response=>{
         
         return response.json();
     })
-    .then((data)=>{                    
+    .then((data)=>{   
+        console.log(data)                 
         data.forEach(element => {
             Tariffs.innerHTML+=`
             <tr> 

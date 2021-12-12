@@ -42,16 +42,6 @@ function TableRender(HeaderArray,PropertyArray,Data,Controller){
         }
     }
 
-    
-
-
-
-   
-
-    
-
-   
-
     let Table = document.createElement("table")
 
     let tableHeader = Table.insertRow();
@@ -352,7 +342,7 @@ function Renders(TableName,arr){
             )
         break;
 
-        case 'LogInfoCUDCount':
+        case 'LogInfoCUDCount': //FIXME: Update bug
 
             arr = arr.pop()
 
@@ -465,30 +455,31 @@ function TableRowsChange(name,callback){
     
     let firstRow = parseInt(BtnFirstRow.value);
     let lastRow = parseInt(BtnLastRow.value);
-    console.log(firstRow);
-    console.log(lastRow)
 
-    console.log(name)
-    console.log((firstRow + 49)-lastRow)
+ 
     switch(name){
         case 'BtnFirstRow':
             if(firstRow != 1){
+              
                 lastRow = firstRow -1;
                 firstRow -=50;
                 callback(firstRow,lastRow,true)
             } else {
+               
                 callback(firstRow,lastRow,false)
             }
         break;
 
         case 'BtnLastRow':
             if(((firstRow + 49)-lastRow) == 0){
-                console.log('true')
+                
+              
                 firstRow = lastRow+1;
                 lastRow +=50;
 
                 callback(firstRow,lastRow,true)
             } else {
+             
                 callback(firstRow,lastRow,false)
             }
         break;

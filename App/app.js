@@ -82,7 +82,7 @@ app.get('/',(req,res)=>{
 });
 
 
-app.get('/api/all/:exec/:firstRow/:lastRow',(req,res)=>{ //FIXME: Table Output
+app.get('/api/all/:exec/:firstRow/:lastRow',(req,res)=>{ 
     console.log(req.params.firstRow,req.params.lastRow)
     DB.PrintAll(req.params.exec,req.params.firstRow,req.params.lastRow)
     .then(records=>{
@@ -164,10 +164,21 @@ app.route('/profile/:login')
 
         if(req.cookies.User && req.cookies.User.Login === req.params.login){ 
             
-            DB.FindById('FindUserNumbers',req.cookies.User.User_Id)
-            .then((records)=>{
-                DB.FindById('FindUserCalls',req.cookies.User.User_Id)
-                .then(CallRecords=>{
+
+            console.log(req.body)
+
+            DB.FindByIdWithRowsRange(
+                'FindUserNumbers',
+                req.cookies.User.User_Id,
+                req.body.numsFirstRow,
+                req.body.numsLastRow
+            ).then((records)=>{
+                DB.FindByIdWithRowsRange(
+                    'FindUserCalls',
+                    req.cookies.User.User_Id,
+                    req.body.callsFirstRow,
+                    req.body.callsLastRow
+                ).then(CallRecords=>{
                     CallRecords ?
                     res.json({
                         IsLogin:true,

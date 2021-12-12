@@ -88,7 +88,24 @@ class DB{
                
                 return result.recordset.length <= 1 ? result.recordset.pop() : result.recordset;
              });            
-         });    
+        });    
+    }
+
+    FindByIdWithRowsRange(exec,id,firstRow,lastRow){
+
+        console.log(exec,id,firstRow,lastRow)
+
+        return sql.connect(config).then(pool=>{
+            return pool.request()
+             .input('Id',sql.Int,id)
+             .input('firstRow',sql.Int,firstRow)
+             .input('lastRow',sql.Int,lastRow)
+             .execute(`${exec}`)
+             .then(result=>{
+               
+                return result.recordset.length <= 1 ? result.recordset.pop() : result.recordset;
+            });            
+        }); 
     }
 
     FindUserByLogin(Login){       
@@ -193,7 +210,7 @@ class DB{
         });
     }
 
-    PrintAll(exec,firstRow,lastRow){ //FIXME: table Output
+    PrintAll(exec,firstRow,lastRow){
 
         console.log(exec,firstRow,lastRow);
 

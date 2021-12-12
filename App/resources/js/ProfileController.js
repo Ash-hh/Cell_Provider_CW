@@ -44,7 +44,7 @@ function profileController(value){
         break;
 
         case 'UserDelete':
-            if(confirm('??')){
+            if(confirm('Are you sure that you want to delete youe account?')){
                 postBody= {
                     id:value.id,
                     userObj:{IsActive:false}
@@ -86,9 +86,9 @@ function profileController(value){
     
 }
 
-function UserInfo(data){
+function UserInfo(data,tableName){
    
-    NumbersInfo.innerHTML = '';
+    CallsNumsInfo.innerHTML = '';
 
     ProfileInfo.innerHTML = `
         <div>
@@ -100,12 +100,17 @@ function UserInfo(data){
     `
 
     if(data.IsLogin){
-        AuthorizedUserInfo(data);
+        AuthorizedUserInfo(data,tableName);
     }
 }
 
+let numbersFirstRow = 1;
+let numbersLastRow =50;
 
-function AuthorizedUserInfo(data){
+let callsFirstRow = 1;
+let callsLastRow = 50;
+
+function AuthorizedUserInfo(data,tableName){
     ProfileInfo.innerHTML += `
         <p><span id='BallanceValue'>Ballance: ${data.User.Ballance}</span>
             <button
@@ -120,42 +125,76 @@ function AuthorizedUserInfo(data){
             name="UserDelete"
             value='${data.User.User_Id}'
             onclick="profileController({id:this.value,name:this.name})">
-            <span>Delete My Account</span> </button>    
+        <span>Delete My Account</span> </button>    
+       
+        <button
+            class='custom-btn btn'
+            onclick="load('Numbers')">
+        <span>My Numbers</span> </button>    
+       
+        <button
+            class='custom-btn btn'
+            name="UserDelete"
+            value='${data.User.User_Id}'
+            onclick="load('Calls')">
+        <span>Call History</span> </button>    
         <hr>
     `
 
-    if(data.hasOwnProperty('Numbers')){
+    if(data.hasOwnProperty('Numbers') && tableName == 'Numbers'){
 
-        NumbersInfo.append(Renders('ProfileNumbers',data.Numbers))
+        CallsNumsInfo.append(Renders('ProfileNumbers',data.Numbers))
+        let rows = TableRowsControl(CallsNumsInfo, numbersFirstRow, data.Numbers,'pageChange','Numbers')
+        numbersFirstRow = rows.firstRow;
+        numbersLastRow = rows.lastRow
    
     }
 
-    if(data.hasOwnProperty('Calls')){
+    if(data.hasOwnProperty('Calls') && tableName=='Calls'){
         
-        CallHistory.append(Renders('ProfileCalls', data.Calls))
+        CallsNumsInfo.append(Renders('ProfileCalls', data.Calls))
+        let rows = TableRowsControl(CallsNumsInfo, callsFirstRow, data.Calls,'pageChange','Calls')
+        callsLastRow = rows.lastRow;
+        callsFirstRow = rows.firstRow;
        
     }
 }
 
-function load(){  
-    
-    let urlstr = 'http://localhost:5000/';
+function pageChange(name){
+   
+    TableRowsChange(name,(firstRow,lastRow,canChange)=>{
+        if(canChange){
+            if(BtnFirstRow.name === 'Numbers'){
+                numbersFirstRow = firstRow;
+                numbersLastRow = lastRow;
+            } else {
+                callsFirstRow = firstRow;
+                callsLastRow = lastRow;
+            }
+           
+            console.log(BtnFirstRow.name)
+            load(BtnFirstRow.name);
+        }
+    })
+}
 
-    let login = document.URL
-    .slice(document.URL
-    .indexOf('/profile')+'/profile'.length+1,
-            document.URL.length) 
+function load(tableName){
    
     fetch(`${document.URL}`,{
-        method:'POST', mode:'no-cors'
+        method:'POST', 
+       
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            callsFirstRow:callsFirstRow,
+            callsLastRow:callsLastRow,
+            numsFirstRow:numbersFirstRow,
+            numsLastRow:numbersLastRow
+        })
     })
     .then(result=>{                
         return result.json();
     })
-    .then((data)=>{           
-      
-        
-        UserInfo(data);
-        
+    .then((data)=>{
+        UserInfo(data,tableName);
     })
 }
