@@ -18,17 +18,28 @@ app.route('/register')
         DB.FindUserByLogin(req.body.username)
         .then(records=>{
             if(!records){
-               
-                let hash = bcrypt.hashSync(req.body.password.trim(), 5);
-              
-                DB.AddUser(req.body.username,
+                
+                if(DB.Validation([
                     req.body.surname,
                     req.body.midname,
                     req.body.dateOfBirth,
                     req.body.login,
-                    hash,
-                    2,0,1);
-                res.redirect('/login'); 
+                    req.body.password])
+                ){
+                    console.log('aaaa???')
+                    let hash = bcrypt.hashSync(req.body.password.trim(), 5);
+              
+                    DB.AddUser(req.body.username,
+                        req.body.surname,
+                        req.body.midname,
+                        req.body.dateOfBirth,
+                        req.body.login,
+                        hash,
+                        2,0,1);
+                    res.redirect('/login'); 
+                } else {
+                    res.redirect('/register'); 
+                }
                 
             } else {
                 res.redirect('/register');
@@ -44,7 +55,7 @@ app.route('/login')
     })
     .post((req,res)=>{
 
-        if(req.body.login && req.body.password){
+        if(DB.Validation([req.body.login,req.body.password])){
             DB.FindUserByLogin(req.body.login)
             .then(records=>{
                 if(records){  
@@ -67,6 +78,8 @@ app.route('/login')
                     res.redirect('/login'); 
                 }
             });            
+        } else {
+            res.redirect('/login')
         }
        
     });
@@ -83,7 +96,7 @@ app.get('/',(req,res)=>{
 
 
 app.get('/api/all/:exec/:firstRow/:lastRow',(req,res)=>{ 
-    console.log(req.params.firstRow,req.params.lastRow)
+   
     DB.PrintAll(req.params.exec,req.params.firstRow,req.params.lastRow)
     .then(records=>{
         res.json(records);
@@ -109,6 +122,7 @@ app.get('/api/findbyid/:exec/:id',(req,res)=>{
     }
 })
 
+//TODO: validation
 
 app.post('/api/user',(req,res)=>{ 
     

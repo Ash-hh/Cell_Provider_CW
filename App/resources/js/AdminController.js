@@ -206,14 +206,27 @@ function TariffEdit(id){
 
 function AddTariff(){
     let form = document.forms.TariffFormAdd;
+    console.log(form.Call_Cost.value)
 
-    let Tariff = {
-        Description : form.Description.value,
-        Call_Cost_perm : form.Call_Cost.value
+    if(Number.isInteger(parseInt(form.Call_Cost.value))){
+        if(form.Call_Cost.value < 0 || form.Call_Cost.value > 10000){
+            alert(' Input correct data! \n You cant set call sot less then 0 and more then 10 000')
+        } else {
+    
+            let Tariff = {
+                Description : form.Description.value,
+                Call_Cost_perm : form.Call_Cost.value
+            }
+           
+            ControllerFunc(undefined,"Tariff_Id",{"exec":"AddTariff"},Tariff) 
+            PopUpHide();
+        }
+    } else {
+        alert(' Input correct data! \n You must input only number (0-9)')
     }
+    
+
    
-    ControllerFunc(undefined,"Tariff_Id",{"exec":"AddTariff"},Tariff) 
-    PopUpHide();
     
 }
 

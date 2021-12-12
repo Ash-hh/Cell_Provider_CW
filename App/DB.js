@@ -34,7 +34,7 @@ class DB{
             .input('Activity',sql.Bit,Activity)
             .execute('UserAdd');
         }).catch(err=>{
-            console.log(err);
+          
         })    
     }    
 
@@ -47,7 +47,7 @@ class DB{
             .input('DateOpen',sql.Date,DateOpen)           
             .execute('NumberAdd')
         }).catch(err=>{
-            console.log(err);
+           
         })
     }
 
@@ -63,7 +63,7 @@ class DB{
                 return result.recordset.pop();
             })
         }).catch(err=>{
-            console.log(err);
+           
         })
     }
 
@@ -75,7 +75,7 @@ class DB{
             .input('CallCostPerMin',sql.Money,Tariff.Call_Cost_perm)
             .execute('TariffAdd')
         }).catch(err=>{
-            console.log(err);
+           
         })
     }
 
@@ -93,7 +93,7 @@ class DB{
 
     FindByIdWithRowsRange(exec,id,firstRow,lastRow){
 
-        console.log(exec,id,firstRow,lastRow)
+       
 
         return sql.connect(config).then(pool=>{
             return pool.request()
@@ -212,7 +212,7 @@ class DB{
 
     PrintAll(exec,firstRow,lastRow){
 
-        console.log(exec,firstRow,lastRow);
+      
 
         return sql.connect(config).then(pool=>{
             return pool.request()
@@ -313,7 +313,7 @@ class DB{
 
         return ConnectionPool.then(pool=>{
             let request = pool.request()
-            console.log(date,daterange)
+         
             if(table){request.input('TableName',sql.VarChar,table)}
             if(key){request.input('Key',sql.VarChar,key)}
             if(date){request.input('Date',sql.VarChar,date)}
@@ -328,6 +328,22 @@ class DB{
             })
         })
         
+    }
+
+    //Validation
+
+    Validation(fields){
+
+        let result = true;
+
+        fields.forEach(element => {
+            console.log(element.length)
+            if(element.length == 0 || element.length > 50){
+                result = false
+            }
+        });
+
+        return result;
     }
 
 

@@ -15,13 +15,22 @@ function BallanceUpdate(value){
     globalValue = value;
 
     BallanceUpdateButton.onclick = (event) =>{
+        if(Number.isInteger(parseInt(ballancevalue.value))){
+            if(ballancevalue.value > 0 && ballancevalue.value < 100000){
+                globalValue.ballance=parseInt(globalValue.ballance)+parseInt(ballancevalue.value)
+           
+                PopUpHide();
+                profileController(globalValue);
+        
+                BallanceValue.innerHTML=`Ballance: ${globalValue.ballance}`
+            } else {
+                alert(' Input correct data! \n You cant top up less then 0 and more then 100 000')
+            }
+        } else {
+            alert(' Input correct data! \n You must input only number (0-9)')
+        }
+      
        
-        globalValue.ballance=parseInt(globalValue.ballance)+parseInt(ballancevalue.value)
-       
-        PopUpHide();
-        profileController(globalValue);
-
-        BallanceValue.innerHTML=`Ballance: ${globalValue.ballance}`
 
 
     }

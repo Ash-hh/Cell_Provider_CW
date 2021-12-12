@@ -10,9 +10,9 @@
     </head>
     <body>
         <form class="login" action="http://localhost:5000/login" method="post">
-            <input type="text" name="login" placeholder="Username">
+            <input type="text" name="login" placeholder="Username" maxlength="50" minlength="1">
             <br>
-            <input type="password"  name="password" placeholder="Password">
+            <input type="password"  name="password" placeholder="Password"  maxlength="50" minlength="1">
             <br>
             <input  class='custom-btn btn' type="submit" value="Log In">
         </form>
