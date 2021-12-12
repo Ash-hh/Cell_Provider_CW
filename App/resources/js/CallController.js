@@ -9,7 +9,7 @@ function GetUserNums(){
 
     fetch('http://localhost:5000/api/findbyid/FindUserNumbers/cookie')
     .then(result=>{
-        console.log(result)
+      
         return result.ok ? result.json() : false;
     }).then(data=>{
         

@@ -27,7 +27,7 @@ function onloadTariffs(){
         return response.json();
     })
     .then((data)=>{   
-        console.log(data)                 
+                  
         data.forEach(element => {
             Tariffs.innerHTML+=`
             <tr> 

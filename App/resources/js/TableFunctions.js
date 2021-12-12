@@ -155,8 +155,6 @@ function PropertySetData(obj,propertyArgs,Data){
 
 function Renders(TableName,arr){
 
-    console.log(TableName)
-
     switch(TableName){
         case 'AllUsers' : 
             
@@ -348,7 +346,7 @@ function Renders(TableName,arr){
 
             AverageExecTime.innerHTML=`<div class=row> <p>Total operations: ${arr.OperationCount}  <br> Total Session operations: ${arr.OperationCountSession}</p><div id="CUD" class="col"> </div> <div id="CUDSession" class="col"> </div> </div>`
 
-                console.log(arr.UpdateCount)
+              
 
             google.charts.load("current", {packages:["corechart"]});
             google.charts.setOnLoadCallback(drawChart2);
@@ -399,7 +397,7 @@ function Renders(TableName,arr){
 
 function TableRowsControl(elem, firstRow,arr,Event,name){ //TODO: current task
 
-    console.log(firstRow)
+  
 
     elem.innerHTML += `
     <div>`;

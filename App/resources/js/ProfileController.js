@@ -171,8 +171,6 @@ function pageChange(name){
                 callsFirstRow = firstRow;
                 callsLastRow = lastRow;
             }
-           
-            console.log(BtnFirstRow.name)
             load(BtnFirstRow.name);
         }
     })
