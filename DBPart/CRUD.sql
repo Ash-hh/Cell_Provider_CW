@@ -66,11 +66,20 @@ end;
 
 --Select all users from USERS
 go
-create procedure AllUsers
+alter procedure AllUsers
+	@firstRow int,
+	@lastRow int
 as
 begin
-	select * from USERS;
+	with row_nums as
+	(
+		SELECT row_number() over(order by USERS.User_Id) as num, 
+		* from USERS
+	)
+	select * from row_nums where num between @firstRow and @lastRow
 end;
+
+
 
 --Select user from USERS
 go
@@ -124,10 +133,17 @@ end;
 
 --Select all tariffs
 go
-create procedure AllTariffs
+alter procedure AllTariffs
+	@firstRow int,
+	@lastRow int
 as
 begin
-	select * from TARIFFS
+	with row_nums as
+	(
+		SELECT row_number() over(order by TARIFFS.Tariff_Id) as num, 
+		* from TARIFFS
+	)
+	select * from row_nums where num between @firstRow and @lastRow
 end;
 
 --Select Tariff from tariffs
@@ -201,12 +217,21 @@ go
 
 --AllNumbers
 go
-create procedure AllNumbers
+alter procedure AllNumbers
+	@firstRow int,
+	@lastRow int
 as
 begin
-	select * from NUMBERS order by Number;
+	with row_nums as
+	(
+		SELECT row_number() over(order by NUMBERS.Number_Id) as num, 
+		* from NUMBERS
+	)
+	select * from row_nums where num between @firstRow and @lastRow
 end;
 go
+
+
 
 
 --------------------------------
@@ -254,10 +279,17 @@ go
 
 --AllCalls
 go
-create procedure AllCalls
+alter procedure AllCalls
+	@firstRow int,
+	@lastRow int
 as
 begin
-	select * from CALLS
+	with row_nums as
+	(
+		SELECT row_number() over(order by CALLS.Call_Id) as num, 
+		* from CALLS
+	)
+	select * from row_nums where num between @firstRow and @lastRow
 end;
 
 --UpdateCall

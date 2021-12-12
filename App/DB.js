@@ -193,9 +193,14 @@ class DB{
         });
     }
 
-    PrintAll(exec){
+    PrintAll(exec,firstRow,lastRow){ //FIXME: table Output
+
+        console.log(exec,firstRow,lastRow);
+
         return sql.connect(config).then(pool=>{
             return pool.request()
+            .input('firstRow',sql.Int,firstRow)
+            .input('lastRow',sql.Int,lastRow)
             .execute(exec)
             .then(result=>{
                 return result.recordset;
@@ -285,7 +290,7 @@ class DB{
         }) 
     }
 
-    LogInfo(mode,table,key,date,daterange){
+    LogInfo(mode,table,key,date,daterange,firstRow,lastRow){
         
         let exec = mode == 'Session' ? 'LogInfoSession' : 'LogInfo'
 
@@ -296,6 +301,9 @@ class DB{
             if(key){request.input('Key',sql.VarChar,key)}
             if(date){request.input('Date',sql.VarChar,date)}
             if(daterange){request.input('DateRange',sql.VarChar,daterange)}
+
+            request.input('firstRow',sql.Int,firstRow)
+            request.input('lastRow',sql.Int,lastRow)
            
             return request.execute(exec)
             .then(records=>{

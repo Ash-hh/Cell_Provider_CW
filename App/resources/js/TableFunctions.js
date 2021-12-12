@@ -46,54 +46,11 @@ function TableRender(HeaderArray,PropertyArray,Data,Controller){
 
 
 
-    function PropertySet(obj,propertyName){
-      
-        return obj.hasOwnProperty(propertyName) ?  obj[propertyName] : undefined
-    }
+   
 
-    function PropertySetData(obj,propertyArgs,Data){
-        
-        let dataProperty = obj[propertyArgs[1]];
-     
-        return obj[propertyArgs[0]] ?  obj[propertyArgs[0]] : Data[dataProperty] 
+    
 
-    }
-
-    function ButtonRender(ButtonController, Data){
-        let button = '<button class="custom-btn btn"'
-           
-        if(ButtonController.id || ButtonController.idValueProperty){
-            button += ` id='${PropertySetData(ButtonController,['id','idValueProperty'],Data)}' `            
-        }
-
-        if(ButtonController.name || ButtonController.nameValueProperty){
-            button += ` name='${PropertySetData(ButtonController,['name','nameValueProperty'],Data)}' `
-        }
-
-        if(ButtonController.value || ButtonController.valueValueProperty){
-            button += ` value='${PropertySetData(ButtonController,['value','valueValueProperty'],Data)}'`
-        }
-           
-        if(ButtonController.onclick || ButtonController.onclickArgs){
-            button+=` onclick='${ButtonController.onclick}(${ButtonController.onclickArgs ? ButtonController.onclickArgs: ''})' `
-        }
-        button += `>${ButtonController.text}</button>` 
-        
-        
-        return button
-    }
-
-
-    function DateParse(date){
-        let result = new Date(date);
-       
-        if(result.getHours() != 3 && result.getMinutes() != 0 && result.getSeconds() != 0){
-           
-            return `${date.slice(0,10)}-${result.getHours()}:${result.getMinutes()}:${result.getSeconds()}`
-        } else {
-            return date.slice(0,10);
-        }
-    }
+   
 
     let Table = document.createElement("table")
 
@@ -153,6 +110,55 @@ function TableRender(HeaderArray,PropertyArray,Data,Controller){
     }
 
     return Table
+
+}
+
+function ButtonRender(ButtonController, Data){
+    let button = '<button class="custom-btn btn"'
+       
+    if(ButtonController.id || ButtonController.idValueProperty){
+        button += ` id='${PropertySetData(ButtonController,['id','idValueProperty'],Data)}' `            
+    }
+
+    if(ButtonController.name || ButtonController.nameValueProperty){
+        button += ` name='${PropertySetData(ButtonController,['name','nameValueProperty'],Data)}' `
+    }
+
+    if(ButtonController.value || ButtonController.valueValueProperty){
+        button += ` value='${PropertySetData(ButtonController,['value','valueValueProperty'],Data)}'`
+    }
+       
+    if(ButtonController.onclick || ButtonController.onclickArgs){
+        button+=` onclick='${ButtonController.onclick}(${ButtonController.onclickArgs ? ButtonController.onclickArgs: ''})' `
+    }
+    button += `>${ButtonController.text}</button>` 
+    
+    
+    return button
+}
+
+
+function DateParse(date){
+    let result = new Date(date);
+   
+    if(result.getHours() != 3 && result.getMinutes() != 0 && result.getSeconds() != 0){
+       
+        return `${date.slice(0,10)}-${result.getHours()}:${result.getMinutes()}:${result.getSeconds()}`
+    } else {
+        return date.slice(0,10);
+    }
+}
+
+function PropertySet(obj,propertyName){
+      
+    return obj.hasOwnProperty(propertyName) ?  obj[propertyName] : undefined
+}
+
+function PropertySetData(obj,propertyArgs,Data){
+    
+    let dataProperty = obj[propertyArgs[1]];
+ 
+    return obj[propertyArgs[0]] ?  obj[propertyArgs[0]] : Data[dataProperty] 
 
 }
 
@@ -352,6 +358,8 @@ function Renders(TableName,arr){
 
             AverageExecTime.innerHTML=`<div class=row> <p>Total operations: ${arr.OperationCount}  <br> Total Session operations: ${arr.OperationCountSession}</p><div id="CUD" class="col"> </div> <div id="CUDSession" class="col"> </div> </div>`
 
+                console.log(arr.UpdateCount)
+
             google.charts.load("current", {packages:["corechart"]});
             google.charts.setOnLoadCallback(drawChart2);
             function drawChart2() {
@@ -395,4 +403,97 @@ function Renders(TableName,arr){
 
         
     }
+}
+
+
+
+function TableRowsControl(elem, firstRow,arr,Event,name){ //TODO: current task
+
+    console.log(firstRow)
+
+    elem.innerHTML += `
+    <div>`;
+
+  
+        let buttonFirst = ButtonRender(             
+            {                                      
+                id:'BtnFirstRow',
+                valueValueProperty:'firstRow',
+                nameValueProperty:'name',
+                onclick:Event,
+                onclickArgs:'this.id',
+                text:'<'
+            },
+            {
+                firstRow:firstRow,
+                name:name
+            }
+        )
+        elem.innerHTML +=`${buttonFirst}`
+    
+    
+   
+    let lastRow = arr.length < 50 ? firstRow + (arr.length - firstRow) : firstRow + 49
+
+    elem.innerHTML +=`${firstRow}-${lastRow} `
+
+    
+        let buttonLast = ButtonRender(
+            {
+                id:'BtnLastRow',
+                valueValueProperty:'lastRow',
+                nameValueProperty:'name',
+                onclick:Event,
+                onclickArgs:'this.id',
+                text:'>'
+            },
+            {
+                lastRow:lastRow,
+                name:name
+            }
+        )
+        elem.innerHTML +=`${buttonLast}`
+    
+   
+    elem.innerHTML += `
+        </div>
+    `
+    return {firstRow:firstRow,lastRow:lastRow}
+}
+
+function TableRowsChange(name,callback){
+    
+    let firstRow = parseInt(BtnFirstRow.value);
+    let lastRow = parseInt(BtnLastRow.value);
+    console.log(firstRow);
+    console.log(lastRow)
+
+    console.log(name)
+    console.log((firstRow + 49)-lastRow)
+    switch(name){
+        case 'BtnFirstRow':
+            if(firstRow != 1){
+                lastRow = firstRow -1;
+                firstRow -=50;
+                callback(firstRow,lastRow,true)
+            } else {
+                callback(firstRow,lastRow,false)
+            }
+        break;
+
+        case 'BtnLastRow':
+            if(((firstRow + 49)-lastRow) == 0){
+                console.log('true')
+                firstRow = lastRow+1;
+                lastRow +=50;
+
+                callback(firstRow,lastRow,true)
+            } else {
+                callback(firstRow,lastRow,false)
+            }
+        break;
+    }
+    
+
+    
 }

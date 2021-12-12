@@ -139,7 +139,7 @@ begin
 			@Date_Open=Date_Open 
 	FROM inserted
 	
-	set @AfterString = 'Number: '+CAST(@Number as varchar(50))+'\n User_Id:'+CAST(@User_Id as varchar(50))+'\n Tariff_Id:'+CAST(@Tariff_Id as varchar(50))+'\n Date_Open:'+@Date_Open
+	set @AfterString = 'Number: '+CAST(@Number as varchar(50))+' User_Id:'+CAST(@User_Id as varchar(50))+' Tariff_Id:'+CAST(@Tariff_Id as varchar(50))+' Date_Open:'+@Date_Open
 	exec CUDlog @Key,@Operation,'NUMBERS',@BeforeString,@AfterString
 end;
 IF EXISTS(SELECT 1 FROM deleted) and @Operation !='UPDATE'
@@ -155,7 +155,7 @@ begin
 	FETCH NEXT FROM delete_cursor INTO @Number, @User_Id, @Tariff_Id, @Date_Open	
 	while @@FETCH_STATUS = 0
 	begin
-		set @BeforeString = 'Number: '+CAST(@Number as varchar(50))+'\n User_Id:'+CAST(@User_Id as varchar(50))+'\n Tariff_Id:'+CAST(@Tariff_Id as varchar(50))+'\n Date_Open:'+@Date_Open
+		set @BeforeString = 'Number: '+CAST(@Number as varchar(50))+' User_Id:'+CAST(@User_Id as varchar(50))+' Tariff_Id:'+CAST(@Tariff_Id as varchar(50))+' Date_Open:'+@Date_Open
 		exec CUDlog 'D','DELETE','NUMBERS',@BeforeString,NULL
 		FETCH NEXT FROM delete_cursor INTO @Number, @User_Id, @Tariff_Id, @Date_Open	
 	end
@@ -491,7 +491,9 @@ alter procedure LogInfo
 	@TableName varchar(20) = NULL,
 	@Key varchar(2) = NULL,
 	@Date date = NULL,
-	@DateRange date = NULL
+	@DateRange date = NULL,
+	@firstRow int = NULL,
+	@lastRow int = NULL
 as
 begin
 	print(@Date)
@@ -500,43 +502,60 @@ begin
 	
 		if @DateRange is NOT NULL
 		begin
+			with row_nums as
+			(
+				SELECT row_number() over(order by OpId) as num, *
+				from(
 			
-			select * from CUDlogAllTime where Date between @DateRange and  @Date
-			except
-			select * from CUDlogAllTime where OperationKey != @Key
-			except
-			select * from CUDlogAllTime where TableName != @TableName
-
-		end else 
-				begin
-					
-					select * from CUDlogAllTime where Date = @Date
+					select * from CUDlogAllTime where Date between @DateRange and  @Date
 					except
 					select * from CUDlogAllTime where OperationKey != @Key
 					except
 					select * from CUDlogAllTime where TableName != @TableName
+				) as resultSet
+			)
+			select * from row_nums where num between @firstRow and @lastRow;
+			
+		end else 
+				begin
+				with row_nums as
+				(
+					SELECT row_number() over(order by OpId) as num, *
+					from(
+						select * from CUDlogAllTime where Date = @Date
+						except
+						select * from CUDlogAllTime where OperationKey != @Key
+						except
+						select * from CUDlogAllTime where TableName != @TableName
+					) as resultSet
+				) select * from row_nums where num between @firstRow and @lastRow;
 				end
-
 	end 
 	else
 	begin 
-		
-		select * from CUDlogAllTime
-		except
-		select * from CUDlogAllTime where OperationKey != @Key
-		except
-		select * from CUDlogAllTime where TableName != @TableName
+	with row_nums as
+		(
+			SELECT row_number() over(order by OpId) as num, *
+			from(
+				select * from CUDlogAllTime
+				except
+				select * from CUDlogAllTime where OperationKey != @Key
+				except
+				select * from CUDlogAllTime where TableName != @TableName
+			) as resultSet
+		)
+		select * from row_nums where num between @firstRow and @lastRow;
 	end
 end
-	
-	exec LogInfo @Date = '2021-12-09', @DateRange = '2021-12-02'
 
 go
 alter procedure LogInfoSession 
 	@TableName varchar(20) = NULL,
 	@Key varchar(2) = NULL,
 	@Date date = NULL,
-	@DateRange date = NULL
+	@DateRange date = NULL,
+	@firstRow int = NULL,
+	@lastRow int = NULL
 as
 begin
 	if not exists (select * from tempdb.dbo.sysobjects where name='##CUDlogSession' )
@@ -554,29 +573,46 @@ begin
 		begin
 			if @DateRange is NOT NULL
 			begin
-
-				select * from ##CUDlogSession where Date between @DateRange and @Date
-				except
-				select * from ##CUDlogSession where OperationKey != @Key
-				except
-				select * from ##CUDlogSession where TableName != @TableName
-
-			end else
-					begin
-						select * from ##CUDlogSession where Date = @Date
+				with row_nums as
+				(
+					SELECT row_number() over(order by OpId) as num, *
+					from(
+						select * from ##CUDlogSession where Date between @DateRange and @Date
 						except
 						select * from ##CUDlogSession where OperationKey != @Key
 						except
 						select * from ##CUDlogSession where TableName != @TableName
+					)as resultSet
+				)
+				select * from row_nums where num between @firstRow and @lastRow;
+			end else
+					begin
+					with row_nums as
+					(
+						SELECT row_number() over(order by OpId) as num, *
+						from(
+							select * from ##CUDlogSession where Date = @Date
+							except
+							select * from ##CUDlogSession where OperationKey != @Key
+							except
+							select * from ##CUDlogSession where TableName != @TableName
+						) as resultSet
+					) select * from row_nums where num between @firstRow and @lastRow;
 					end
 
 		end else 
 			begin 
-				select * from ##CUDlogSession
-				except
-				select * from ##CUDlogSession where OperationKey != @Key
-				except
-				select * from ##CUDlogSession where TableName != @TableName
+			with row_nums as
+			(
+				SELECT row_number() over(order by OpId) as num, *
+				from(
+					select * from ##CUDlogSession
+					except
+					select * from ##CUDlogSession where OperationKey != @Key
+					except
+					select * from ##CUDlogSession where TableName != @TableName
+				) as resultSet
+			) select * from row_nums where num between @firstRow and @lastRow;
 			end
 end
 
@@ -620,4 +656,4 @@ declare @Stat as [dbo].[LogStats]
 	select * from @Stat
 end
 
-
+exec LogInfoCUDCount

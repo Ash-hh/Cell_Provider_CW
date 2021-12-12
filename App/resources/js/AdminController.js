@@ -1,6 +1,10 @@
 
 
-let arr=[];     
+let arr=[];   
+
+let currentFirstRow = 1;
+
+let currentLastRow = 50;
                 
 function DBInfo(){
     fetch(`http://localhost:5000/api/admin/DBObjCount/0`)
@@ -17,10 +21,39 @@ function DBInfo(){
     })
 }
 
-function send(Button_Value){
+function pageChange(name){
+   
+    TableRowsChange(name,(firstRow,lastRow,canChange)=>{
+        console.log(canChange)
+        if(canChange){
+            console.log(firstRow,lastRow)
+            ///exec = BtnFirstRow ? BtnFirstRow.name : BtnLastRow.name
+            let tableName = BtnFirstRow.name;
+            fetch(`http://localhost:5000/api/all/${tableName}/${firstRow}/${lastRow}`)
+            .then(result=>{
+                return result.json()
+            }).then(data=>{    
+                arr = data;
+                console.log()
+                resultDiv.innerHTML = '';
+                resultDiv.append(Renders(tableName,arr))
+                let rows = TableRowsControl(resultDiv,firstRow,arr,'pageChange',tableName)
+                currentFirstRow = rows.firstRow;
+                currentLastRow = rows.lastRow;
+                
+            })
+        }
+    })
+}
+
+function send(Button_Value){ //TODO: rename]
+
+    currentFirstRow = 1;
+
+    currentLastRow = 50;
 
     if(Button_Value.indexOf('Xml')==-1){
-        fetch(`http://localhost:5000/api/all/${Button_Value}`)
+        fetch(`http://localhost:5000/api/all/${Button_Value}/${currentFirstRow}/${currentLastRow}`)
         .then(result=>{
             return result.json()
         }).then(data=>{
@@ -29,8 +62,12 @@ function send(Button_Value){
             ff = arr[0];
             resultDiv.innerHTML = '';
             resultDiv.append(Renders(Button_Value,arr))
+            let rows = TableRowsControl(resultDiv,currentFirstRow,arr,'pageChange',Button_Value)
+            console.log(arr)
             
         })
+
+       
     } else {
         
         awaitPopUp.style.visibility = 'visible';
@@ -206,9 +243,13 @@ function MonitorController(exec){
     })
 }
 
+let currentLogFirstRow = 1;
+let currentLogLastRow = 50;
 
 function LogController(){
 
+    currentLogFirstRow = 1;
+    currentLogLastRow = 50;
     AverageExecTime.innerHTML=''
 
     console.log(Type.value)
@@ -238,7 +279,7 @@ function LogController(){
 
     console.log(date,daterange)
 
-    fetch(`http://localhost:5000/api/log/`,{
+    fetch(`http://localhost:5000/api/log/${currentLogFirstRow}/${currentLogLastRow}`,{ //TODO: current task
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
@@ -254,9 +295,68 @@ function LogController(){
         LastExecs.innerHTML='';
         ExecsCount.innerHTML='';
         ExecsCount.append(Renders('LogInfo',data));
+        let rows = TableRowsControl(ExecsCount,currentLogFirstRow,data,'pageChangeLog')
+        currentLogFirstRow = rows.firstRow;
+        currentLogLastRow = rows.lastRow;
        
     })
 
 
+}
+
+function pageChangeLog(name){
+    TableRowsChange(name,(firstRow,lastRow,canChange)=>{
+
+        console.log(canChange)
+
+        if(canChange){
+
+            let date;
+            let daterange;
+           
+            let today = new Date()
+        
+            switch(TimeRange.value){
+                case 'Today':
+                    date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+                    console.log(date)
+                break;
+        
+                case '2 Days':
+                   
+                    date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+                    daterange = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()-1).padStart(2, '0')}`
+                break;
+        
+                case 'Week':
+                    date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+                    daterange = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()-7).padStart(2, '0')}`
+                break;
+            }
+
+            console.log(firstRow,lastRow)
+            fetch(`http://localhost:5000/api/log/${firstRow}/${lastRow}`,{ //TODO: current task
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    mode:Type.value,
+                    table:TableName.value == 'All' ? undefined : TableName.value,
+                    key:Operation.value == 'All' ? undefined : Operation.value,
+                    date:date,
+                    daterange:daterange
+                })
+            }).then(result=>{
+                return result.json()
+            }).then(data=>{
+                LastExecs.innerHTML='';
+                ExecsCount.innerHTML='';
+                ExecsCount.append(Renders('LogInfo',data));
+                let rows = TableRowsControl(ExecsCount,firstRow,data,'pageChangeLog')
+                currentLogFirstRow = rows.firstRow;
+                currentLogLastRow = rows.lastRow;
+            
+            })
+        }
+    })
 }
 

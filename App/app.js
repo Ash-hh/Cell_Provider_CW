@@ -82,8 +82,9 @@ app.get('/',(req,res)=>{
 });
 
 
-app.get('/api/all/:exec',(req,res)=>{
-    DB.PrintAll(req.params.exec)
+app.get('/api/all/:exec/:firstRow/:lastRow',(req,res)=>{ //FIXME: Table Output
+    console.log(req.params.firstRow,req.params.lastRow)
+    DB.PrintAll(req.params.exec,req.params.firstRow,req.params.lastRow)
     .then(records=>{
         res.json(records);
     })
@@ -286,13 +287,15 @@ app.route('/api/admin/:exec/:id')
     })
 
 
-app.post('/api/log',(req,res)=>{
+app.post('/api/log/:firstRow/:lastRow',(req,res)=>{
     DB.LogInfo(
         req.body.mode,
         req.body.table,
         req.body.key,
         req.body.date,
-        req.body.daterange
+        req.body.daterange,
+        req.params.firstRow,
+        req.params.lastRow
     ).then(result=>{
         res.json(result)
     })
