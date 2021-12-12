@@ -17,7 +17,7 @@ set @number = 100000;
 set @Id = 1;
 set @TafId = 1;
 set @date = '2021-02-02';
-while @iter < 10
+while @iter < 10000
 	begin
 		if(@Id = 10)
 			set @Id = 1;
@@ -31,6 +31,9 @@ while @iter < 10
 		set @Id = @Id +1;
 		set @TafId = @TafId+1;
 	end;
+
+	delete from CALLS
+	delete from NUMBERS
 
 
 

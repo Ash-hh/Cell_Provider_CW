@@ -68,7 +68,7 @@ function CallForm(mode){
             second++;
             min = second == 60 ? Math.floor(second/60) : min;
             second =  second < 60 ? second : 0;
-            diagnostic.innerHTML = `${min}:${second}`;
+            diagnostic.innerHTML = `Call timer: ${min<10 ? "0"+min : min}:${second < 10 ? "0"+second : second}`;
         },1000)
 
     } else {
@@ -91,6 +91,11 @@ function CallForm(mode){
     }).then(data=>{
         callId = Number.isInteger(parseInt(data)) ? parseInt(data) : 0;
         //diagnostic.innerHTML += data;
-        call_id.innerHTML+=data;
+        if(mode=='Start Call'){
+            call_id.innerHTML='Your call in process'
+        } else {
+            call_id.innerHTML=data
+        }
+       
     })
 }

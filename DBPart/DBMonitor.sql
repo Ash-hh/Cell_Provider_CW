@@ -475,18 +475,23 @@ select * from ##CUDlogSession
 
 
 go
-create procedure ClearLog
-	@mode int
+alter procedure ClearLog
+	@mode int = NULL
 as
 begin
 	if(@mode = 2)
 	begin
 		delete from  CUDlogAllTime
 	end
+	if exists (select * from tempdb.dbo.sysobjects where name='##CUDlogSession' )
+	begin
 		delete from  ##CUDlogSession
+	end
 end
 go
 
+
+go
 alter procedure LogInfo 
 	@TableName varchar(20) = NULL,
 	@Key varchar(2) = NULL,
@@ -656,4 +661,4 @@ declare @Stat as [dbo].[LogStats]
 	select * from @Stat
 end
 
-exec LogInfoCUDCount
+exec LogInfo  @firstRow = 1, @lastRow = 50

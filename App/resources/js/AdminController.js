@@ -27,7 +27,7 @@ function pageChange(name){
         console.log(canChange)
         if(canChange){
             console.log(firstRow,lastRow)
-            ///exec = BtnFirstRow ? BtnFirstRow.name : BtnLastRow.name
+          
             let tableName = BtnFirstRow.name;
             fetch(`http://localhost:5000/api/all/${tableName}/${firstRow}/${lastRow}`)
             .then(result=>{
@@ -46,7 +46,7 @@ function pageChange(name){
     })
 }
 
-function send(Button_Value){ //TODO: rename]
+function send(Button_Value){ 
 
     currentFirstRow = 1;
 
@@ -87,8 +87,7 @@ function ControllerFunc(id,name,value,Tariff=undefined){
 
    console.log(value)
 
-   // value = JSON.parse(value)
-    
+     
     let searchelem = arr.find(user => user[name] == id);
     
     let elemId =  arr.indexOf(searchelem); 
@@ -105,7 +104,7 @@ function ControllerFunc(id,name,value,Tariff=undefined){
             arr[elemId] = searchelem; 
         }   
     } else {
-        if(confirm('U cant rollbcak Delete')){
+        if(confirm('You can not to rollback delete, are you sure?')){
             arr.splice(elemId,1);
                                   
         } else {

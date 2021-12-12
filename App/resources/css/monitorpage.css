@@ -1,0 +1,30 @@
+.container {
+    height: 100%;
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+
+.wrapper {
+    padding-right: 20px;
+}
+
+.row {
+    clear: both;
+}
+.col {
+    float: left;
+    margin-left: 20px;
+
+
+}
+
+button{
+    margin-top: 8px;
+    margin-bottom: 3px;
+}
+

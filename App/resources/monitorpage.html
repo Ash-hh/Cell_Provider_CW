@@ -5,41 +5,25 @@
         <link rel="stylesheet" 
         type="text/css" 
         href='http://localhost:5000/api/resources/css/buttons_links.css'>
+        <link rel="stylesheet" 
+        type="text/css" 
+        href='http://localhost:5000/api/resources/css/monitorpage.css'>
         <script src="https://www.google.com/jsapi"></script>
         <script src='http://localhost:5000/api/resources/js/TableFunctions.js'></script>
         <script src='http://localhost:5000/api/resources/js/AdminController.js'></script>
        
         <style>
-        .container {
-                height: 100%;
-            
-            }
-
-            * {
-                box-sizing: border-box;
-            }
-
-
-
-            .wrapper {
-                padding-right: 20px;
-            }
-
-            .row {
-                clear: both;
-            }
-            .col {
-                float: left;
-                margin-left: 20px;
-            
-            
-            }
+        
 
         </style>
     </head>
     <body>
         <header>
             <div>
+                <div id="HeaderLink">
+                    <a class ='underline' href="http://localhost:5000/">Main Page</a>
+                    <a class="underline" href='http://localhost:5000/Admin/main'>Admin Panel</a>
+                </div>
                 <button class='custom-btn btn' type="button" onclick="MonitorController(this.value)" value="LastExecs">Last Executions</button>
                 <button class='custom-btn btn' type="button" onclick="MonitorController(this.value)" value="ProcExecsCount">Procedure Executions</button>
                 <button class='custom-btn btn' type="button" onclick="MonitorController(this.value)" value="LongestAVGexecTime">Average Executions</button>
