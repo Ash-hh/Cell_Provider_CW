@@ -87,7 +87,8 @@ function profileController(value){
         }
     }).then(data=>{
         if(value.name === 'NumberDelete'){
-            UserInfo(data);
+            
+            UserInfo(data,'Numbers');
             
         }
     })

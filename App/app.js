@@ -26,7 +26,7 @@ app.route('/register')
                     req.body.login,
                     req.body.password])
                 ){
-                    console.log('aaaa???')
+                   
                     let hash = bcrypt.hashSync(req.body.password.trim(), 5);
               
                     DB.AddUser(req.body.username,
@@ -122,7 +122,7 @@ app.get('/api/findbyid/:exec/:id',(req,res)=>{
     }
 })
 
-//TODO: validation
+
 
 app.post('/api/user',(req,res)=>{ 
     
@@ -149,7 +149,7 @@ app.post('/api/user',(req,res)=>{
         
         awaitDelete()
 
-        DB.FindById('FindUserNumbers',req.cookies.User.User_Id)
+        DB.FindByIdWithRowsRange('FindUserNumbers',req.cookies.User.User_Id,1,50)
         .then(records=>{
             res.json({
                 IsLogin:true,
@@ -172,9 +172,7 @@ app.route('/profile/:login')
             res.sendStatus(404); 
         }
     })
-    .post((req,res)=>{                
-
-     
+    .post((req,res)=>{ 
 
         if(req.cookies.User && req.cookies.User.Login === req.params.login){ 
             
@@ -255,21 +253,28 @@ app.route('/subtariff')
     .post((req,res)=>{
 
         let number;
-            
-        DB.GetNumber()
-        .then(result=>{            
-            number = result;
-           
-            DB.AddNumber(
-                number,
-                req.cookies.User.User_Id,
-                req.query.id,
-                '2021-01-01'
-            );
         
-            res.send(`Your number is ${number}`)
-            res.end();
-        })
+        if(req.cookies.User){
+            DB.GetNumber()
+            .then(result=>{            
+                number = result;
+               
+                DB.AddNumber(
+                    number,
+                    req.cookies.User.User_Id,
+                    req.query.id,
+                    '2021-01-01'
+                );
+            
+                res.send(`Your number is ${number}`)
+                res.end();
+            })
+        } else {
+           
+            res.send('You must authorize before get number')
+        }
+        
+      
                
        
 
@@ -278,9 +283,7 @@ app.route('/subtariff')
     })
 
 app.route('/api/admin/:exec/:id') 
-    .post((req,res)=>{
-
-      
+    .post((req,res)=>{      
 
         if(req.params.exec != 'AddTariff'){
             DB[req.params.exec](req.params.id,req.body)
@@ -356,7 +359,7 @@ app.route('/call')
            
             DB.StartCall(req.body.sender,req.body.receiver,(req.body.min*60)+req.body.second)
             .then(records=>{
-               
+              
                 res.end(`${records}`);
             })
 
