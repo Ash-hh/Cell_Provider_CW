@@ -1,7 +1,7 @@
 use CELL_PROVIDER
 ----------------------------
 go
-alter procedure FindUserByLogin
+create procedure FindUserByLogin
 	@login nvarchar(50)
 as
 begin
@@ -15,7 +15,7 @@ exec FindUserByLogin Admin
 
 USE CELL_PROVIDER
 go
-alter procedure FindUserNumbers
+create procedure FindUserNumbers
 (
 	@Id int,
 	@firstRow int = NULL,
@@ -29,18 +29,24 @@ as
 		(
 			SELECT row_number() over(order by Number_Id) as num, 
 			* from (
-				select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id
+				select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm 
+				from NUMBERS as NUMS 
+				JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id 
+				where NUMS.User_Id = @Id
 			) as resultSet
 		)
 		select * from row_nums where num between @firstRow and @lastRow
 	end else 
 		begin
-			select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm from NUMBERS as NUMS JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id where NUMS.User_Id = @Id	
+			select NUMS.Number_Id,NUMS.Number,NUMS.Date_Open,NUMS.Tariff_Id,TAF.Description,TAF.Call_Cost_perm 
+			from NUMBERS as NUMS 
+			JOIN TARIFFS as TAF ON NUMS.Tariff_Id =  TAF.Tariff_Id 
+			where NUMS.User_Id = @Id	
 		end
 	end;
 go
 
-alter procedure FindUserCalls
+create procedure FindUserCalls
 (
 	@Id int,
 	@firstRow int,
@@ -72,20 +78,22 @@ as
 begin
 	declare @sender int = dbo.FindUser_IdByNumber(@senderNumber);
 	declare @receiver int =  dbo.FindUser_IdByNumber(@receiverNumber)
-	print(@sender)
-	print(@receiver)
 	declare @call_id int
-	exec @call_id = CallAdd 
+	if @sender is not NULL and @receiver is NOT NULL
+	begin
+		exec @call_id = CallAdd 
 						@User_Sender_Id = @sender,
 						@User_Sender_Number=@senderNumber,
 						@User_Receiever_Id=@receiver,
 						@User_Receiver_Number=@receiverNumber,
 						@Call_Time=@time,@Call_Cost=0;
-
-	return @call_id
+		return @call_id
+	end
+		else
+		return -1;
 end;
 
-	exec CallStart 100001, 190000, 0 
+	exec CallStart 100001, 999999, 0 
 
 go
 create Function FindUser_IdByNumber(

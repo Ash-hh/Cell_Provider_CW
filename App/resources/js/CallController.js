@@ -91,10 +91,15 @@ function CallForm(mode){
     }).then(data=>{
         callId = Number.isInteger(parseInt(data)) ? parseInt(data) : 0;
         //diagnostic.innerHTML += data;
-        if(mode=='Start Call'){
+       
+        if(mode=='Start Call' && callId!=-1){
             call_id.innerHTML='Your call in process'
         } else {
-            call_id.innerHTML=data
+            call_id.innerHTML='At least one number diesnt exist, pleace input correct number'
+            clearInterval(timer);
+            form.submit.value = "Start Call";
+            form.sender.disabled = false;
+            form.receiver.disabled = false;
         }
        
     })
