@@ -113,23 +113,22 @@ alter procedure CallEnd
 	@timeEnd int
 as
 begin
-	declare @bill int = (
-		select Call_Cost_perm from TARIFFS as TAF 
+	declare @bill decimal(17,2) = (
+		select CAST(Call_Cost_perm as DECIMAL(17,2)) from TARIFFS as TAF 
 		JOIN NUMBERS as NUM 
 		on TAF.Tariff_Id = NUM.Tariff_Id 
-		where NUM.Number = @senderNumber) * @timeEnd
+		where NUM.Number = @senderNumber) * CAST(CAST(@timeEnd as DECIMAL(17,2))/60 as decimal(17,2))
     
 	declare @User_Id int = (select User_Sender_Id from CALLS where Call_Id = @callId)	
-	declare @User_Ballance int = (select Ballance from USERS where User_Id = @User_Id)
-	set @User_Ballance = @User_Ballance - @bill;
+	declare @User_Ballance decimal(17,2) = (select Ballance from USERS where User_Id = @User_Id)
+	set @User_Ballance = CAST(@User_Ballance as decimal(17,2)) - @bill;
 	exec UserUpdate @User_Id,@Ballance= @User_Ballance;
 	exec CallUpdate @Id = @callid, @Call_Time = @timeEnd,@Call_Cost=@bill;
 
 	select @bill as Bill,Ballance from USERS where User_Id = @User_Id;
 end;
 
-
-
+select * from CALLS
 
 --Solve Problems of NUMBERS table
 go
@@ -140,24 +139,16 @@ declare @num int
 begin
 	set @num = (select TOP (1)  Number from NUMBERS order by Number desc);
 	set @num = @num+1;
-
 	if exists (select * from tempdb.dbo.sysobjects	where name='##FreeNumbers' )
 	begin
 		if exists (select TOP(1) Number from ##FreeNumbers)
-		begin
-			set @freenum = (select TOP(1) Number from ##FreeNumbers)
-		end
+		begin set @freenum = (select TOP(1) Number from ##FreeNumbers) end
 	end
 	print(@freenum)
 	if(@freenum is null)
-		begin
-			print(@num)
-			return @num	
-		end
+		begin return @num end
 	else
-		begin
-			delete from  ##FreeNumbers where Number = @freenum
-			print(@freenum)
+		begin delete from  ##FreeNumbers where Number = @freenum
 			return @freenum
 		end
 end
@@ -165,36 +156,22 @@ go
 
 
 go 
-alter procedure SetFreeNums
+create procedure SetFreeNums
 as
 if not exists (select * from tempdb.dbo.sysobjects 
 	where name='##FreeNumbers' )
-	begin
-		create table ##FreeNumbers(Number int);
-	end
-
-delete from ##FreeNumbers
-
-declare @numa int;
-declare @numb int;
-
-declare @start int;
-declare @end int;
-
+	begin create table ##FreeNumbers(Number int); end
+delete from ##FreeNumbers declare @numa int;
+declare @numb int; declare @start int; declare @end int;
 declare cursor_freeNums CURSOR FOR
 select Number from NUMBERS order by Number
-
 open cursor_freeNums
 	FETCH NEXT from cursor_freeNums into @numa	
-	FETCH NEXT from cursor_freeNums into @numb	
-
+	FETCH NEXT from cursor_freeNums into @numb
 	if(@numa !=100000)
 		set @numa = 100000
-
-
 	while @@FETCH_STATUS = 0
 	begin
-
 		if(@numb-@numa != -1)
 		begin
 		set @start = @numa+1;
@@ -207,7 +184,6 @@ open cursor_freeNums
 		end;
 		set @numa = @numb
 		FETCH NEXT from cursor_freeNums into @numb
-
 	end
 close cursor_freeNums
 deallocate cursor_freeNums
