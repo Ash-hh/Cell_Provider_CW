@@ -2,7 +2,7 @@ use CELL_PROVIDER
 
 -- Last Executions On Database
 go
-alter procedure LastExecs 
+create procedure LastExecs 
 as
 begin
 	SELECT TOP 20
@@ -25,11 +25,11 @@ go
 exec LastExecs
 exec ProcExecsCount
 go
-alter procedure ProcExecsCount
+create procedure ProcExecsCount
 as
 begin
 	SELECT DISTINCT obj.name, MAX(rs.count_executions) as total_execution_count
-		--SUM(rs.count_executions) AS total_execution_count
+		
 	FROM sys.query_store_query_text AS qt
 		JOIN sys.query_store_query AS q
 			ON qt.query_text_id = q.query_text_id
@@ -43,13 +43,14 @@ begin
 		GROUP BY obj.name
 		ORDER BY total_execution_count DESC
 end;
+
 go
 exec AllTariffs
 exec ProcExecsCount
 
 
 go
-alter procedure LongestAVGexecTime --наибольшее среднее время выполнения
+alter procedure LongestAVGexecTime 
 as
 begin
 	SELECT TOP 10 obj.name,SUM(rs.avg_duration) as sumAvg FROM sys.query_store_query_text AS qt
@@ -75,7 +76,7 @@ begin
 	from  sys.objects where type = 'U' or type = 'P'
 end
 go
-
+select * from sys.objects
 exec  DBObjCount
 
 exec LongestAVGexecTime
@@ -95,7 +96,7 @@ exec ProcExecsCount
 
 
 create table ##CUDlogSession(
-	OpId int identity(1,1),
+	OpId int identity(1,1) constraint OpId_PK primary key,
 	OperationKey varchar(2),
 	Operation varchar(20),
 	TableName varchar(20),
@@ -281,14 +282,11 @@ end
 create trigger TariffTrigger on Tariffs AFTER INSERT, UPDATE, DELETE
 as
 	declare @Description varchar(max),
-	@Call_Cost_perm money
-	
+	@Call_Cost_perm money	
 	declare @BeforeString varchar(max);
 	declare @AfterString varchar(max);
-
 	declare @Operation varchar(10) = 'INSERT';
 	declare @Key varchar(2) = 'I';
-
 IF EXISTS(SELECT 1 FROM inserted)
 begin	
 	IF EXISTS(SELECT 1 FROM deleted)
@@ -304,8 +302,7 @@ begin
 	end
 	SELECT   @Description = Description,
 			@Call_Cost_perm = Call_Cost_perm
-	FROM inserted
-	
+	FROM inserted	
 	set @AfterString = 'Description: '+@Description+', Call_Cost_perm:'+CAST(@Call_Cost_perm as varchar(50))
 	exec CUDlog @Key,@Operation,'TARIFFS',@BeforeString,@AfterString
 end;
@@ -315,7 +312,6 @@ begin
 	SELECT  Description,
 			Call_Cost_perm 
 	FROM deleted
-
 	open delete_cursor
 	FETCH NEXT FROM delete_cursor INTO @Description, @Call_Cost_perm
 	while @@FETCH_STATUS = 0
@@ -420,7 +416,7 @@ end
 go
 
 
-alter procedure CUDlog
+create procedure CUDlog
 	@OperationKey varchar(2),
 	@Operation varchar(20),
 	@TableName varchar(20),
@@ -459,7 +455,7 @@ end;
 go 
 
 create table CUDlogAllTime(
-	OpId int identity(1,1),
+	OpId int identity(1,1) constraint OpId_PK primary key,
 	OperationKey varchar(2),
 	Operation varchar(20),
 	TableName varchar(20),
@@ -473,7 +469,7 @@ create table CUDlogAllTime(
 select * from CUDlogAllTime
 select * from ##CUDlogSession
 
-
+drop procedure ClearLog
 go
 alter procedure ClearLog
 	@mode int = NULL
@@ -635,19 +631,16 @@ create type LogStats as TABLE(
 
 	
 go
-alter procedure LogInfoCUDCount
+create procedure LogInfoCUDCount
 as
 begin
-
 declare @Stat as [dbo].[LogStats]
-
 	insert into @Stat (InsertCount,UpdateCount,DeleteCount,OperationCount) VALUES (
 		(SELECT COUNT(OperationKey) FROM CUDlogAllTime where OperationKey = 'I'),
 		(SELECT COUNT(OperationKey) FROM CUDlogAllTime where OperationKey = 'U'),
 		(SELECT COUNT(OperationKey) FROM CUDlogAllTime where OperationKey = 'D'),
 		(SELECT COUNT(OperationKey) FROM CUDlogAllTime)
 	)
-	
 	if exists (select * from tempdb.dbo.sysobjects where name='##CUDlogSession' )
 	begin
 		update @Stat
@@ -656,8 +649,6 @@ declare @Stat as [dbo].[LogStats]
 			DeleteCountSession = (SELECT COUNT(OperationKey) FROM ##CUDlogSession where OperationKey = 'D'),
 			OperationCountSession =(SELECT COUNT(OperationKey) FROM ##CUDlogSession)
 		end
-	
-
 	select * from @Stat
 end
 

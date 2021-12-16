@@ -8,7 +8,8 @@ go
 
 
 --Add User
- alter procedure UserAdd
+go
+ create procedure UserAdd
 	@Username nvarchar(50),
 	@Surname nvarchar(50),
 	@MidName nvarchar(50),
@@ -66,7 +67,7 @@ end;
 
 --Select all users from USERS
 go
-alter procedure AllUsers
+create procedure AllUsers
 	@firstRow int,
 	@lastRow int
 as

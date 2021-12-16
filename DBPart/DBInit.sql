@@ -3,7 +3,7 @@ go
 
 go
 use CELL_PROVIDER;
-
+go
 create table USER_TYPE
 (
 	Id int identity(1,1) constraint USER_TYPE_PK primary key,
@@ -39,7 +39,7 @@ create table TARIFFS
 create table NUMBERS
 (
 	Number_Id int identity(1,1) constraint NUMBER_PK primary key,
-	Number int,
+	Number int unique,
 	User_Id int constraint USER_ID_FK foreign key references USERS(User_Id),
 	Tariff_Id int constraint TARRIF_ID_FK foreign key references TARIFFS(Tariff_Id),
 	Date_Open date

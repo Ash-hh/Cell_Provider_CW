@@ -318,8 +318,8 @@ function Renders(TableName,arr){
                                 2]);
 
                 var options = {
-                    title: "Average procedure executions time",
-                    width: 700,
+                    title: "Average procedure executions time (ms)",
+                    width: 800,
                     height: 500,
                     bar: {groupWidth: "95%"},
                     legend: { position: "none" },
@@ -340,8 +340,7 @@ function Renders(TableName,arr){
             )
         break;
 
-        case 'LogInfoCUDCount': //FIXME: Update bug
-
+        case 'LogInfoCUDCount': 
             arr = arr.pop()
 
             AverageExecTime.innerHTML=`<div class=row> <p>Total operations: ${arr.OperationCount}  <br> Total Session operations: ${arr.OperationCountSession}</p><div id="CUD" class="col"> </div> <div id="CUDSession" class="col"> </div> </div>`
@@ -395,7 +394,7 @@ function Renders(TableName,arr){
 
 
 
-function TableRowsControl(elem, firstRow,arr,Event,name){ //TODO: current task
+function TableRowsControl(elem, firstRow,arr,Event,name){ 
 
   
 

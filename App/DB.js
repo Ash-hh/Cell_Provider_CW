@@ -80,12 +80,11 @@ class DB{
     }
 
     FindById(exec,id){
-        return sql.connect(config).then(pool=>{
+        return ConnectionPool.then(pool=>{
             return pool.request()
              .input('Id',sql.Int,id)
              .execute(`${exec}`)
              .then(result=>{
-               
                 return result.recordset.length <= 1 ? result.recordset.pop() : result.recordset;
              });            
         });    
@@ -272,7 +271,7 @@ class DB{
 
 
     //Xml Functions
-    XMLFunc(exec,callback){  //FIXME: ????? 
+    XMLFunc(exec,callback){  
         return ConnectionPool.then(pool=>{
             pool.request()
             .execute(exec)
@@ -337,7 +336,7 @@ class DB{
         let result = true;
 
         fields.forEach(element => {
-            console.log(element.length)
+           
             if(element.length == 0 || element.length > 50){
                 result = false
             }

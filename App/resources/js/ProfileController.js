@@ -68,10 +68,7 @@ function profileController(value){
         break;
         default:return 0;
     }   
-
-
    
-    
     fetch('http://localhost:5000/api/user',{
         method:'POST',                   
         headers:{'Content-Type':'application/json'},
