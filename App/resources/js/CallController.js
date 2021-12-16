@@ -95,11 +95,17 @@ function CallForm(mode){
         if(mode=='Start Call' && callId!=-1){
             call_id.innerHTML='Your call in process'
         } else {
-            call_id.innerHTML='At least one number diesnt exist, pleace input correct number'
-            clearInterval(timer);
-            form.submit.value = "Start Call";
-            form.sender.disabled = false;
-            form.receiver.disabled = false;
+            if(callId!=-1){
+                call_id.innerHTML=data;
+            } else {
+                call_id.innerHTML='At least one number doesnt exist , please input correct number'
+                clearInterval(timer);
+                form.submit.value = "Start Call";
+                form.sender.disabled = false;
+                form.receiver.disabled = false;
+                diagnostic.innerHTML = "Error"
+            }
+           
         }
        
     })
