@@ -120,31 +120,39 @@ function ControllerFunc(id,name,value,Tariff=undefined){
     .then(result=>{
         if(result.ok)
             return result.text();
+       
+
     }).then(data=>{
         resultDiv.innerHTML = '';
-       
-        if(value.exec.indexOf('Tariff')!=-1) 
-        {   
-            if(value.exec == 'AddTariff'){
-                send('AllTariffs')
-                return 0;
-            } else {    
-                tableName ='AllTariffs';
+        
+        if(parseInt(data) != -1){
+            if(value.exec.indexOf('Tariff')!=-1) 
+            {   
+                if(value.exec == 'AddTariff'){
+                    send('AllTariffs')
+                    return 0;
+                } else {    
+                    tableName ='AllTariffs';
+                }
+            }   
+    
+            if(value.exec.indexOf('Number')!=-1) {
+                tableName = 'AllNumbers';
             }
+            if(value.exec.indexOf('User')!=-1) {
+                tableName='AllUsers';
+            }
+            if(value.exec.indexOf('Call')!=-1) {
+                tableName='AllCalls';
+            }
+        } else {
+            tableName = 'AllUsers'
+            alert('Durak?')
         }   
-
-        if(value.exec.indexOf('Number')!=-1) {
-            tableName = 'AllNumbers';
-        }
-        if(value.exec.indexOf('User')!=-1) {
-            tableName='AllUsers';
-        }
-        if(value.exec.indexOf('Call')!=-1) {
-            tableName='AllCalls';
-        }
-
-        resultDiv.append(Renders(tableName,arr))
-        let rows = TableRowsControl(resultDiv,currentFirstRow,arr,'pageChange',tableName)
+            resultDiv.append(Renders(tableName,arr))
+            let rows = TableRowsControl(resultDiv,currentFirstRow,arr,'pageChange',tableName)
+           
+        
        
 
     })
@@ -206,7 +214,7 @@ function TariffEdit(id){
 
 function AddTariff(){
     let form = document.forms.TariffFormAdd;
-    console.log(form.Call_Cost.value)
+    
 
     if(Number.isInteger(parseInt(form.Call_Cost.value))){
         if(form.Call_Cost.value < 0 || form.Call_Cost.value > 10000){

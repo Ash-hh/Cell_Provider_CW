@@ -286,7 +286,12 @@ app.route('/api/admin/:exec/:id')
     .post((req,res)=>{      
 
         if(req.params.exec != 'AddTariff'){
-            DB[req.params.exec](req.params.id,req.body)
+            if(req.params.id == req.cookies.User.User_Id){
+               
+                res.send('-1')
+            } else {
+                DB[req.params.exec](req.params.id,req.body)
+            }
         } else {
             
             DB[req.params.exec](req.body)
@@ -379,7 +384,7 @@ app.route('/call')
                     BuffUser.Ballance = records.Ballance;
                     res.cookie('User',BuffUser)
                 }          
-                res.end(`call cost: ${records.Bill} account ballance: ${records.Ballance}`)
+                res.end(`Call cost: ${records.Bill}. Account ballance: ${records.Ballance}`)
             })
 
         }
@@ -395,6 +400,5 @@ app.listen(5000);
 
 DB.SetFreeNumbers();
 
-//TODO: change bill calc system
 
     
